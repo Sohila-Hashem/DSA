@@ -1,4 +1,4 @@
-class Queue {
+export class Queue {
     constructor() {
         this.queue = [];
         this.maxSize = 10;
@@ -48,7 +48,7 @@ class PriorityQueueEntry {
     }
 }
 
-class PriorityQueue extends Queue {
+export class PriorityQueue extends Queue {
     constructor() {
         super();
     }
