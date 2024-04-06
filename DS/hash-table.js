@@ -59,16 +59,25 @@ export default class HashTable {
         const index = this.#hash(key, this.bucket.length);
         const entry = this.bucket[index];
 
+        // check if the key already exists and if yes,
+        // update it
         if (entry) {
-            // check if the key already exists and if yes,
-            // update it
+            let isFound = false;
             entry.forEach((subEntry, index) => {
                 if (subEntry[0] === key) {
                     entry[index][1] = value;
+                    isFound = true;
                 }
             });
+
+            if (!isFound) {
+                this.bucket[index].push([key, value]);
+            }
+
+            return entry;
         } else {
             this.bucket[index] = [[key, value]];
+            return [[key, value]];
         }
     }
 
@@ -85,7 +94,9 @@ export default class HashTable {
                 }
             });
 
-            return foundEntry[1];
+            if (foundEntry) {
+                return foundEntry[1];
+            }
         }
 
         return null;
@@ -115,13 +126,14 @@ export default class HashTable {
 }
 
 // const ht = new HashTable(3);
-// ht.setKey("Name", "Sohila");
-// ht.setKey("Age", "22");
-// ht.setKey("Age", "21");
-// ht.setKey("Gender", "F");
-// ht.setKey("Job", "Software");
-// ht.setKey("MStatus", "Married");
+// ht.setKey("you");
+// ht.setKey("alice");
+// ht.setKey("alice", "asd");
+// ht.setKey("peggy", "21");
+// ht.setKey("anuj", "F");
+// ht.setKey("bob", "Software");
+// ht.setKey("claire", "Married");
 
 // console.log(ht.bucket.length);
-// console.log(ht.getKey("Age"));
+// console.log(ht.getKey("claire"));
 // console.log(ht.bucket);
