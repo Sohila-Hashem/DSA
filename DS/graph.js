@@ -48,7 +48,13 @@ export default class Graph {
         if (!vertex) {
             throw new Error("Please specify a vertex");
         }
-        this.graph.setKey(vertex, []);
+
+        if (!this.getVertexNeighbors(vertex)) {
+            this.graph.setKey(vertex, []);
+            return;
+        }
+
+        throw new Error("Vertex already exists");
     }
 
     // remove edge/arrow from graph
@@ -98,7 +104,9 @@ export default class Graph {
 // graph.addEdge("bob", "peggy");
 // graph.addEdge("alice", "peggy");
 
-// // graph.addVertex();
+// graph.addVertex("Sohila");
+
+// graph.addVertex();
 
 // console.log(graph.getVertexNeighbors("you"));
 
