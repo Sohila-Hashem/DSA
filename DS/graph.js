@@ -87,7 +87,15 @@ export default class GraphList {
                 this.#graph
             );
 
-        console.log(sourceNode, destinationNode);
+        const isFoundSrcInDest = destinationNode.find((ele) => ele === source);
+
+        const isFoundDestInSrc = sourceNode.find((ele) => ele === destination);
+
+        if (isFoundDestInSrc && isFoundSrcInDest) {
+            return true;
+        }
+
+        return false;
     }
 }
 
@@ -125,7 +133,7 @@ class GraphListUtils {
 // graph.addEdge("bob", "peggy");
 // graph.addEdge("alice", "peggy");
 
-// graph.isNeighbors("you", "alice");
+// console.log(graph.isNeighbors("claire", "anuj"));
 
 // console.log(graph.getNodeNeighbors("you"));
 
