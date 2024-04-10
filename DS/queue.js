@@ -2,44 +2,76 @@ export class Queue {
     constructor() {
         this.queue = [];
         this.maxSize = 10;
+        this.front = -1;
+        this.rear = -1;
+    }
+
+    getSize() {
+        return this.rear - this.front + 1;
     }
 
     // enqueue
     enqueue(value) {
+        if (value === undefined) throw new Error("value is defined");
+
         if (this.isFull()) {
             throw new Error("Queue is of max size");
         }
-        this.queue.push(value);
+
+        if (this.front === -1) {
+            this.front++;
+        }
+
+        this.queue[++this.rear] = value;
     }
 
     // dequeue
     dequeue() {
-        return this.queue.shift();
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+
+        const tempFront = this.front;
+
+        this.front++;
     }
 
     // get the peak/front element from the queue without removing it
     getPeak() {
-        return this.queue[0];
+        return this.queue[this.front];
     }
 
     // is the queue empty
     isEmpty() {
-        return !!!this.queue.length;
+        return this.front === -1 || this.front > this.rear;
     }
 
     // is the queue full
     isFull() {
-        return this.queue.length === this.maxSize;
+        return this.getSize() === this.maxSize - 1;
     }
 
     // print queue
     printQueue() {
         const queueLen = this.queue.length;
-        for (let i = 0; i < queueLen; i++) {
+        for (let i = this.front; i < queueLen; i++) {
             console.log(this.queue[i]);
         }
     }
 }
+
+// const queue = new Queue();
+
+// queue.enqueue(8);
+// queue.enqueue(1);
+// queue.enqueue(12);
+// queue.enqueue(9);
+
+// queue.dequeue();
+
+// queue.printQueue();
+
+// queue.getPeak();
 
 class PriorityQueueEntry {
     constructor(value, priority) {
@@ -49,58 +81,61 @@ class PriorityQueueEntry {
 }
 
 export class PriorityQueue extends Queue {
+    #maxPriority = 0;
+
     constructor() {
         super();
     }
 
     // here we set the priority default to
     // the array length + 1 to make priorities always start with 1
-    enqueue(value, priority = this.queue.length + 1) {
-        const pqEntry = new PriorityQueueEntry(value, priority);
-        let added = false;
+    enqueue(value, priority) {
+        if (priority === undefined) throw new Error("priority must be defined");
+
+        if (priority < 0) throw new Error("underflow priority number");
 
         if (this.isFull()) {
             throw new Error("Queue is of max size");
         }
 
-        if (!priority) {
-            this.queue.push(pqEntry);
+        const pqEntry = new PriorityQueueEntry(value, priority);
+
+        if (priority >= this.#maxPriority) {
+            this.#maxPriority = priority;
+            super.enqueue(pqEntry);
             return;
         }
 
-        for (let i = 0; i < this.queue.length; i++) {
+        for (let i = this.front; i < this.queue.length; i++) {
             if (this.queue[i].priority > priority) {
                 this.queue.splice(i, 0, pqEntry);
-                added = true;
+                this.rear++;
                 break;
             }
         }
-
-        if (!added) {
-            this.queue.push(pqEntry);
-        }
-
         return;
     }
 }
 
-const queue = new Queue();
-const priorityQueue = new PriorityQueue();
+// const priorityQueue = new PriorityQueue();
 
-queue.enqueue(8);
-queue.enqueue(1);
-queue.enqueue(12);
-queue.enqueue(9);
+// priorityQueue.enqueue([7, 1], 1);
+// priorityQueue.enqueue([8], 0);
+// priorityQueue.enqueue([3, 4], 4);
+// priorityQueue.enqueue({ Name: "Amra" }, 1);
+// priorityQueue.enqueue("Waffle", 100);
+// priorityQueue.enqueue(true, 50);
+// priorityQueue.enqueue("Sef", 80);
+// priorityQueue.enqueue("Kiyle", 3);
 
-// console.log(queue.queue);
+// console.log(priorityQueue.isEmpty());
 
-priorityQueue.enqueue(4);
-priorityQueue.enqueue(5);
-priorityQueue.enqueue(1);
-priorityQueue.enqueue([7, 1], 1);
-priorityQueue.enqueue([8]);
-priorityQueue.enqueue([3, 4], 4);
+// priorityQueue.dequeue();
+// priorityQueue.dequeue();
 
-console.log(priorityQueue.isEmpty());
+// priorityQueue.enqueue("Sohila", 2);
 
-console.log(priorityQueue.queue);
+// console.log(priorityQueue.getPeak());
+
+// console.log(priorityQueue.queue);
+// console.log(priorityQueue.getSize());
