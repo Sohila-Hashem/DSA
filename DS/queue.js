@@ -33,11 +33,15 @@ export class Queue {
 
         const tempFront = this.front;
 
-        this.front++;
+        return this.queue[this.front++];
     }
 
     // get the peak/front element from the queue without removing it
     getPeak() {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+
         return this.queue[this.front];
     }
 
@@ -53,6 +57,10 @@ export class Queue {
 
     // print queue
     printQueue() {
+        if (this.isEmpty()) {
+            throw new Error("Queue is empty");
+        }
+
         const queueLen = this.queue.length;
         for (let i = this.front; i < queueLen; i++) {
             console.log(this.queue[i]);
@@ -60,18 +68,18 @@ export class Queue {
     }
 }
 
-// const queue = new Queue();
+const queue = new Queue();
 
-// queue.enqueue(8);
-// queue.enqueue(1);
-// queue.enqueue(12);
-// queue.enqueue(9);
+queue.enqueue(8);
+queue.enqueue(1);
+queue.enqueue(12);
+queue.enqueue(9);
 
-// queue.dequeue();
+console.log(queue.dequeue());
 
-// queue.printQueue();
+queue.printQueue();
 
-// queue.getPeak();
+console.log(queue.getPeak());
 
 class PriorityQueueEntry {
     constructor(value, priority) {
