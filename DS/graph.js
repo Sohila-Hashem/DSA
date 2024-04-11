@@ -1,4 +1,16 @@
 import HashTable from "./hash-table.js";
+class GraphListUtils {
+    static getEdgeNodes(source, destination, graph) {
+        if (!source || !destination) {
+            throw new Error("source and destination must be defined");
+        }
+
+        const sourceNode = graph.getKey(source);
+        const destinationNode = graph.getKey(destination);
+
+        return [sourceNode, destinationNode];
+    }
+}
 
 export default class GraphList {
     #graph;
@@ -12,26 +24,39 @@ export default class GraphList {
     }
 
     getNodeNeighbors(vertex) {
+        if (!vertex) throw new Error("vertex name must be provided");
         return this.#graph.getKey(vertex);
     }
 
     // add edge/arrow to a node/vertex
-    addEdge(source, destination) {
-        let [sourceNode, destinationNode] =
-            GraphListUtils.checkExistenceOfNodes(
-                source,
-                destination,
-                this.#graph
-            );
+    addEdge(source, destination, options = { weight: 1, isDirected: false }) {
+        if (this.isNeighbors(source, destination)) return;
 
-        this.#graph.setKey(source, [...sourceNode, destination]);
-        this.#graph.setKey(destination, [...destinationNode, source]);
+        const [sourceNode, destinationNode] = GraphListUtils.getEdgeNodes(
+            source,
+            destination,
+            this.#graph
+        );
+
+        if (!sourceNode || !destinationNode)
+            throw new Error("Either source or destination node is not defined");
+
+        if (!options.isDirected) {
+            destinationNode.push({
+                nodeName: source,
+                weight: options.weight || 1,
+            });
+            this.#graph.setKey(destination, destinationNode);
+        }
+
+        sourceNode.push({ nodeName: destination, weight: options.weight || 1 });
+        this.#graph.setKey(source, sourceNode);
     }
 
     // add node/vertex to graph
     addNode(node) {
         if (!node) {
-            throw new Error("Please specify a node");
+            throw new Error("Please specify a node identifier");
         }
 
         if (!this.getNodeNeighbors(node)) {
@@ -43,20 +68,33 @@ export default class GraphList {
 
     // remove edge/arrow from graph
     removeEdge(source, destination) {
-        const [sourceNode, destinationNode] =
-            GraphListUtils.checkExistenceOfNodes(
-                source,
+        if (!this.isNeighbors(source, destination))
+            throw new Error("source and destination nodes are not neighbors");
+
+        const [sourceNode, destinationNode] = GraphListUtils.getEdgeNodes(
+            source,
+            destination,
+            this.#graph
+        );
+
+        let isUndirectedRS = false;
+
+        destinationNode.forEach((neighbor) => {
+            if (neighbor.nodeName === source) isUndirectedRS = true;
+        });
+
+        if (isUndirectedRS) {
+            this.#graph.setKey(
                 destination,
-                this.#graph
+                destinationNode.filter(
+                    (neighbor) => neighbor.nodeName !== source
+                )
             );
+        }
 
         this.#graph.setKey(
             source,
-            sourceNode.filter((neighbor) => neighbor !== destination)
-        );
-        this.#graph.setKey(
-            destination,
-            destinationNode.filter((neighbor) => neighbor !== source)
+            sourceNode.filter((neighbor) => neighbor.nodeName !== destination)
         );
     }
 
@@ -70,28 +108,32 @@ export default class GraphList {
         }
 
         for (let i = 0; i < nodeNeighbors.length; i++) {
-            this.removeEdge(node, nodeNeighbors[i]);
+            this.removeEdge(node, nodeNeighbors[i].nodeName);
         }
 
-        return this.#graph.removeKey(node);
+        this.#graph.removeKey(node);
+        return true;
     }
 
     isNeighbors(source, destination) {
         if (!source || !destination)
             throw new Error("source and destination must be defined");
 
-        const [sourceNode, destinationNode] =
-            GraphListUtils.checkExistenceOfNodes(
-                source,
-                destination,
-                this.#graph
-            );
+        const [sourceNode, destinationNode] = GraphListUtils.getEdgeNodes(
+            source,
+            destination,
+            this.#graph
+        );
 
-        const isFoundSrcInDest = destinationNode.find((ele) => ele === source);
+        const isFoundDestInSrc = sourceNode.find(
+            (neighbor) => neighbor.nodeName === destination
+        );
 
-        const isFoundDestInSrc = sourceNode.find((ele) => ele === destination);
+        const isFoundSrcInDest = destinationNode.find(
+            (neighbor) => neighbor.nodeName === source
+        );
 
-        if (isFoundDestInSrc && isFoundSrcInDest) {
+        if ((isFoundDestInSrc && isFoundSrcInDest) || isFoundDestInSrc) {
             return true;
         }
 
@@ -99,24 +141,8 @@ export default class GraphList {
     }
 }
 
-class GraphListUtils {
-    static checkExistenceOfNodes(source, destination, graph) {
-        if (!source || !destination) {
-            throw new Error("source and destination must be defined");
-        }
-
-        const sourceNode = graph.getKey(source);
-        const destinationNode = graph.getKey(destination);
-
-        if (!sourceNode || !destinationNode) {
-            throw new Error("either source or destination does not exist");
-        }
-
-        return [sourceNode, destinationNode];
-    }
-}
-
 // const graph = new GraphList();
+// const isDirected = true;
 
 // graph.addNode("you");
 // graph.addNode("alice");
@@ -126,20 +152,49 @@ class GraphListUtils {
 // graph.addNode("anuj");
 // graph.addNode("Sohila");
 
-// graph.addEdge("you", "alice");
-// graph.addEdge("you", "bob");
+// graph.addEdge("you", "alice", { isDirected });
+// graph.addEdge("you", "bob", { isDirected });
 // graph.addEdge("you", "claire");
-// graph.addEdge("claire", "anuj");
-// graph.addEdge("bob", "peggy");
-// graph.addEdge("alice", "peggy");
+// graph.addEdge("claire", "anuj", { isDirected });
+// graph.addEdge("bob", "peggy", { isDirected });
+// graph.addEdge("alice", "peggy", { isDirected });
+// graph.addEdge("alice", "peggy", { isDirected });
 
-// console.log(graph.isNeighbors("claire", "anuj"));
+// console.log(graph.isNeighbors("you", "alice"));
+// console.log(graph.isNeighbors("anuj", "claire"));
 
-// console.log(graph.getNodeNeighbors("you"));
+// graph.removeEdge("alice", "peggy");
+// graph.removeEdge("peggy", "alice");
 
 // graph.removeNode("you");
 
+// console.log(graph.getNodeNeighbors("claire"));
+
 // console.log(graph.getGraph());
+
+class GraphMatrixUtils {
+    static getNodeIndex(node, nodeList) {
+        if (!node) throw new Error("expected an argument of node");
+
+        return nodeList[node];
+    }
+
+    // checks if two nodes already exists or not
+    static checkExistenceOfNodes(source, destination, nodeList) {
+        if (!source || !destination) {
+            throw new Error("source and destination must be defined");
+        }
+
+        const sourceIndex = this.getNodeIndex(source, nodeList);
+        const destinationIndex = this.getNodeIndex(destination, nodeList);
+
+        if (sourceIndex === undefined || destinationIndex === undefined) {
+            throw new Error("either source or destination does not exist");
+        }
+
+        return [sourceIndex, destinationIndex];
+    }
+}
 
 export class GraphMatrix {
     #size;
@@ -231,30 +286,6 @@ export class GraphMatrix {
             );
 
         return !!this.#matrix[sourceNodeIndex][destinationNodeIndex];
-    }
-}
-
-class GraphMatrixUtils {
-    static getNodeIndex(node, nodeList) {
-        if (!node) throw new Error("expected an argument of node");
-
-        return nodeList[node];
-    }
-
-    // checks if two nodes already exists or not
-    static checkExistenceOfNodes(source, destination, nodeList) {
-        if (!source || !destination) {
-            throw new Error("source and destination must be defined");
-        }
-
-        const sourceIndex = this.getNodeIndex(source, nodeList);
-        const destinationIndex = this.getNodeIndex(destination, nodeList);
-
-        if (sourceIndex === undefined || destinationIndex === undefined) {
-            throw new Error("either source or destination does not exist");
-        }
-
-        return [sourceIndex, destinationIndex];
     }
 }
 
