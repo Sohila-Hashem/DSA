@@ -326,43 +326,43 @@ export class GraphMatrix {
     }
 }
 
-const graphMatrix = new GraphMatrix();
-const isDirected = true;
+// const graphMatrix = new GraphMatrix();
+// const isDirected = true;
 
-graphMatrix.addNode("A");
-graphMatrix.addNode("B");
-graphMatrix.addNode("C");
-graphMatrix.addNode("D");
-graphMatrix.addNode("E");
-graphMatrix.addNode("F");
-graphMatrix.addNode("G");
-graphMatrix.addNode("N");
+// graphMatrix.addNode("A");
+// graphMatrix.addNode("B");
+// graphMatrix.addNode("C");
+// graphMatrix.addNode("D");
+// graphMatrix.addNode("E");
+// graphMatrix.addNode("F");
+// graphMatrix.addNode("G");
+// graphMatrix.addNode("N");
 
-graphMatrix.addEdge("A", "B");
-graphMatrix.addEdge("A", "C", { isDirected, weight: 10 });
-graphMatrix.addEdge("C", "B", { isDirected, weight: 12 });
-graphMatrix.addEdge("C", "F", { isDirected, weight: 14 });
-graphMatrix.addEdge("C", "N", { isDirected, weight: 16 });
-graphMatrix.addEdge("N", "F", { isDirected });
-graphMatrix.addEdge("B", "D", { isDirected });
-graphMatrix.addEdge("F", "E", { isDirected });
-graphMatrix.addEdge("D", "G", { isDirected });
-graphMatrix.addEdge("E", "G", { weight: 7 });
+// graphMatrix.addEdge("A", "B");
+// graphMatrix.addEdge("A", "C", { isDirected, weight: 10 });
+// graphMatrix.addEdge("C", "B", { isDirected, weight: 12 });
+// graphMatrix.addEdge("C", "F", { isDirected, weight: 14 });
+// graphMatrix.addEdge("C", "N", { isDirected, weight: 16 });
+// graphMatrix.addEdge("N", "F", { isDirected });
+// graphMatrix.addEdge("B", "D", { isDirected });
+// graphMatrix.addEdge("F", "E", { isDirected });
+// graphMatrix.addEdge("D", "G", { isDirected });
+// graphMatrix.addEdge("E", "G", { weight: 7 });
 
-console.log(graphMatrix.getNode("C"));
+// console.log(graphMatrix.getNode("C"));
 
-graphMatrix.removeNode("C");
+// graphMatrix.removeNode("C");
 
-graphMatrix.addNode("I");
+// graphMatrix.addNode("I");
 
-graphMatrix.addEdge("I", "B");
+// graphMatrix.addEdge("I", "B");
 
-graphMatrix.removeEdge("B", "A");
+// graphMatrix.removeEdge("B", "A");
 
-console.log(graphMatrix.isNeighbors("N", "F"));
-console.log(graphMatrix.isNeighbors("F", "N"));
-console.log(graphMatrix.isNeighbors("E", "G"));
-console.log(graphMatrix.isNeighbors("G", "E"));
+// console.log(graphMatrix.isNeighbors("N", "F"));
+// console.log(graphMatrix.isNeighbors("F", "N"));
+// console.log(graphMatrix.isNeighbors("E", "G"));
+// console.log(graphMatrix.isNeighbors("G", "E"));
 
-console.log(graphMatrix.getMatrix());
-console.log(graphMatrix.getNodeList());
+// console.log(graphMatrix.getMatrix());
+// console.log(graphMatrix.getNodeList());
