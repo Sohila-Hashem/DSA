@@ -230,7 +230,8 @@ export class GraphMatrix {
     }
 
     addNode(node) {
-        if (this.#nodeList[node]) return;
+        if (this.#nodeList[node])
+            throw new Error(`node: ${node} already exists`);
 
         if (this.#currentNodeIndex > this.#size)
             throw new Error("the graph is in full capacity");
@@ -266,12 +267,21 @@ export class GraphMatrix {
         const nodeIndex = GraphMatrixUtils.getNodeIndex(node, this.#nodeList);
 
         for (let i = 0; i < this.#matrix.length; i++) {
-            this.#matrix[i][nodeIndex] = 0;
+            this.#matrix[i].splice(nodeIndex, 1);
+            this.#matrix[i].push(0);
         }
 
-        for (let i = 0; i < this.#matrix[nodeIndex].length; i++) {
-            this.#matrix[nodeIndex][i] = 0;
+        for (let node in this.#nodeList) {
+            const nodeCurrentIndex = this.#nodeList[node];
+
+            if (nodeCurrentIndex > nodeIndex) {
+                this.#nodeList[node] -= 1;
+            }
         }
+
+        this.#matrix.splice(nodeIndex, 1);
+
+        this.#matrix.push(new Array(10).fill(0));
 
         this.#currentNodeIndex--;
         delete this.#nodeList[node];
@@ -316,11 +326,15 @@ export class GraphMatrix {
 // console.log(graphMatrix.isNeighbors("C", "F"));
 // console.log(graphMatrix.isNeighbors("C", "D"));
 
+// graphMatrix.removeNode("C");
+
+// graphMatrix.addNode("I");
+
+// graphMatrix.addEdge("I", "B");
+
 // graphMatrix.removeEdge("A", "B");
 
-// console.log(graphMatrix.isNeighbors("A", "B"));
-
-// graphMatrix.removeNode("C");
+// console.log(graphMatrix.isNeighbors("I", "B"));
 
 // console.log(graphMatrix.getMatrix());
 // console.log(graphMatrix.getNodeList());
