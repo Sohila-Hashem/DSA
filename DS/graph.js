@@ -1,4 +1,5 @@
 import HashTable from "./hash-table.js";
+import { Queue } from "./queue.js";
 class GraphListUtils {
     static getEdgeNodes(source, destination, graph) {
         if (!source || !destination) {
@@ -42,14 +43,10 @@ export default class GraphList {
             throw new Error("Either source or destination node is not defined");
 
         if (!options.isDirected) {
-            destinationNode.push({
-                nodeName: source,
-                weight: options.weight || 1,
-            });
+            destinationNode.push([source, options.weight || 1]);
             this.#graph.setKey(destination, destinationNode);
         }
-
-        sourceNode.push({ nodeName: destination, weight: options.weight || 1 });
+        sourceNode.push([destination, options.weight || 1]);
         this.#graph.setKey(source, sourceNode);
     }
 
@@ -80,21 +77,19 @@ export default class GraphList {
         let isUndirectedRS = false;
 
         destinationNode.forEach((neighbor) => {
-            if (neighbor.nodeName === source) isUndirectedRS = true;
+            if (neighbor[0] === source) isUndirectedRS = true;
         });
 
         if (isUndirectedRS) {
             this.#graph.setKey(
                 destination,
-                destinationNode.filter(
-                    (neighbor) => neighbor.nodeName !== source
-                )
+                destinationNode.filter((neighbor) => neighbor[0] !== source)
             );
         }
 
         this.#graph.setKey(
             source,
-            sourceNode.filter((neighbor) => neighbor.nodeName !== destination)
+            sourceNode.filter((neighbor) => neighbor[0] !== destination)
         );
     }
 
@@ -108,7 +103,7 @@ export default class GraphList {
         }
 
         for (let i = 0; i < nodeNeighbors.length; i++) {
-            this.removeEdge(node, nodeNeighbors[i].nodeName);
+            this.removeEdge(node, nodeNeighbors[i][0]);
         }
 
         this.#graph.removeKey(node);
@@ -126,11 +121,11 @@ export default class GraphList {
         );
 
         const isFoundDestInSrc = sourceNode.find(
-            (neighbor) => neighbor.nodeName === destination
+            (neighbor) => neighbor[0] === destination
         );
 
         const isFoundSrcInDest = destinationNode.find(
-            (neighbor) => neighbor.nodeName === source
+            (neighbor) => neighbor[0] === source
         );
 
         if ((isFoundDestInSrc && isFoundSrcInDest) || isFoundDestInSrc) {
@@ -138,6 +133,42 @@ export default class GraphList {
         }
 
         return false;
+    }
+
+    bfs(start, compareCB) {
+        const startNodeNeighbors = this.getNodeNeighbors(start);
+
+        if (!startNodeNeighbors)
+            throw new Error(`${start} is not a defined node in the graph`);
+
+        const queue = new Queue();
+        const result = [];
+        const visited = {};
+
+        queue.enqueue(start);
+
+        while (!queue.isEmpty()) {
+            const currentNode = queue.dequeue();
+
+            if (!visited[currentNode]) {
+                // if (compareCB(currentNode)) result.push(currentNode);
+                const nodeNeighbors = this.getNodeNeighbors(currentNode);
+
+                for (let i = 0; i < nodeNeighbors.length; i++) {
+                    queue.enqueue(nodeNeighbors[i][0]);
+                }
+
+                if (compareCB && compareCB(currentNode)) {
+                    result.push(currentNode);
+                } else if (!compareCB) {
+                    result.push(currentNode);
+                }
+
+                visited[currentNode] = true;
+            }
+        }
+
+        return result;
     }
 }
 
@@ -156,7 +187,7 @@ export default class GraphList {
 // graph.addEdge("you", "bob", { isDirected });
 // graph.addEdge("you", "claire");
 // graph.addEdge("claire", "anuj", { isDirected });
-// graph.addEdge("bob", "peggy", { isDirected });
+// graph.addEdge("bob", "peggy", { isDirected, weight: 8 });
 // graph.addEdge("alice", "peggy", { isDirected });
 // graph.addEdge("alice", "peggy", { isDirected });
 
@@ -171,6 +202,18 @@ export default class GraphList {
 // console.log(graph.getNodeNeighbors("claire"));
 
 // console.log(graph.getGraph());
+
+// const callbackFun = (node) => {
+//     // we assuming here that mango sellers
+//     // are the ones with a name length higher than 3
+//     if (node.length > 3) return true;
+//     return false;
+// };
+// const mangoSellersNoCB = graph.bfs("alice");
+// const mangoSellers = graph.bfs("alice", callbackFun);
+
+// console.log(mangoSellersNoCB);
+// console.log(mangoSellers);
 
 class GraphMatrixUtils {
     static getNodeIndex(node, nodeList) {
