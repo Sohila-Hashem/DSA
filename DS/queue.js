@@ -1,7 +1,7 @@
 export class Queue {
-    constructor() {
+    constructor(maxSize) {
         this.queue = [];
-        this.maxSize = 10;
+        this.maxSize = maxSize || 1000;
         this.front = -1;
         this.rear = -1;
     }
@@ -89,14 +89,12 @@ class PriorityQueueEntry {
 }
 
 export class PriorityQueue extends Queue {
-    #maxPriority = 0;
+    #currentMaxPriority = 0;
 
     constructor() {
         super();
     }
 
-    // here we set the priority default to
-    // the array length + 1 to make priorities always start with 1
     enqueue(value, priority) {
         if (priority === undefined) throw new Error("priority must be defined");
 
@@ -108,8 +106,8 @@ export class PriorityQueue extends Queue {
 
         const pqEntry = new PriorityQueueEntry(value, priority);
 
-        if (priority >= this.#maxPriority) {
-            this.#maxPriority = priority;
+        if (priority >= this.#currentMaxPriority) {
+            this.#currentMaxPriority = priority;
             super.enqueue(pqEntry);
             return;
         }
