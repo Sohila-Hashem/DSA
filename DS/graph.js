@@ -367,6 +367,43 @@ export class GraphMatrix {
 
         return false;
     }
+
+    // O(V^2)
+    bfs(start, compareCB) {
+        const queue = new Queue();
+        const result = [];
+        const visited = {};
+
+        if (this.#nodeList[start] === undefined)
+            throw new Error(`Node ${start} does not exist in the graph`);
+
+        queue.enqueue(start);
+
+        while (!queue.isEmpty()) {
+            const currentNode = queue.dequeue();
+
+            if (!visited[currentNode]) {
+                const currentNodeNeighbors = this.getNode(currentNode);
+                const nodeListEntries = this.getNodeList();
+
+                for (let i = 0; i < currentNodeNeighbors.length; i++) {
+                    if (currentNodeNeighbors[i]) {
+                        queue.enqueue(nodeListEntries[i][0]);
+                    }
+                }
+
+                if (compareCB && compareCB(currentNode)) {
+                    result.push(currentNode);
+                } else if (!compareCB) {
+                    result.push(currentNode);
+                }
+
+                visited[currentNode] = true;
+            }
+        }
+
+        return result;
+    }
 }
 
 // const graphMatrix = new GraphMatrix();
@@ -409,3 +446,14 @@ export class GraphMatrix {
 
 // console.log(graphMatrix.getMatrix());
 // console.log(graphMatrix.getNodeList());
+
+// const compareCB = (node) => {
+//     const nodeName = node + Math.floor(Math.random() * 15);
+//     if (nodeName.slice(1) % 2 === 0) {
+//         return true;
+//     }
+//     return false;
+// };
+
+// console.log(graphMatrix.bfs("A"));
+// console.log(graphMatrix.bfs("C", compareCB));
