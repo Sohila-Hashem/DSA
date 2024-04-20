@@ -1,5 +1,5 @@
 // insertion sort can be used to sort an unsorted array
-// it's time complexity is O(N^2) - bad
+// it's time complexity is O(N^2)
 
 const arr = [8, 1, 9, 11, 2, 6, 0, 10, 12, 7, 13, 3, 0, -20, 5, 4, 14, 15, 16];
 
@@ -16,9 +16,7 @@ const insertionSort = (arr) => {
             // if the current index value is less than the preceding
             // index value, swap the values and so till the beginning of the array.
             if (arr[j] < arr[j - 1]) {
-                let temp = arr[j - 1];
-                arr[j - 1] = arr[j];
-                arr[j] = temp;
+                [arr[j], arr[j - 1]] = [arr[j - 1], arr[j]];
             }
         }
     }
