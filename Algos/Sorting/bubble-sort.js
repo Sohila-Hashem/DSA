@@ -1,5 +1,5 @@
 // bubble sort can be used to sort an unsorted array
-// it's time complexity is O(N^2) - bad
+// it's time complexity is O(N^2)
 
 const arr = [1, 8, 9, 11, 2, 6, 0, 10, 12, 7, 13, 3, 0, -20, 5, 4, 14, 15, 16];
 const sorted = [
@@ -21,16 +21,11 @@ const bubbleSort = (arr) => {
         // until the end of the array - 1 - i (as a sort of optimization)
         // and that's since they will already be sorted after each iteration.
         for (let j = 0; j < arr.length - 1 - i; j++) {
-            // store the adjacent value in a var for
-            // the swap purpose, however, it can be done
-            // as well using the array destructure technique.
-            let temp = arr[j + 1];
             // check if the adjacent arr value is less than
             // the current one in the sub-loop (the preceding value)
             if (arr[j + 1] < arr[j]) {
                 // if true than swap them
-                arr[j + 1] = arr[j];
-                arr[j] = temp;
+                [arr[j + 1], arr[j]] = [arr[j], arr[j + 1]];
                 operationsCounter++;
             }
         }
