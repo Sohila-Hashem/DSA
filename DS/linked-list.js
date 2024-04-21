@@ -17,14 +17,16 @@ export class LinkedList {
     }
 
     // returns a deep copy of the Head
-    getHead() {
+    get head() {
         return Object.assign({}, this.#head);
     }
 
-    getTail() {
+    // returns a deep copy of the tail
+    get tail() {
         return Object.assign({}, this.#tail);
     }
 
+    // returns a deep copy of the list size
     get size() {
         return [this.#size][0];
     }
@@ -167,11 +169,11 @@ export class LinkedList {
         }
 
         if (position === 1) {
-            return this.getHead();
+            return this.head;
         }
 
         if (position === this.#size) {
-            return this.getTail();
+            return this.tail;
         }
 
         while (current) {
@@ -208,29 +210,39 @@ export class LinkedList {
     }
 }
 
-// const ll = new LinkedList();
+const ll = new LinkedList();
 
+// insert (at the end)
 // ll.insert("Sohila");
 // ll.insert("Ahmed");
 // ll.insert("Mohamed");
 // ll.insert("A");
 
+// insert (at the head)
 // ll.insertHead("Samir");
 
+// insert (at a given position)
 // ll.insertAt(ll.size, "Amra");
 // ll.insertAt(2, "Waffle");
 // ll.insertAt(1, "Sef");
 
+// remove head
 // ll.removeHead();
 
+// remove current tail
 // ll.remove();
 
+// remove at a given position
 // ll.removeAt(3);
 
-// console.log(ll.getTail());
+// get current tail
+// console.log(ll.tail);
 
-// console.log(ll.getHead());
+// get current head
+// console.log(ll.head);
 
+// get an element at a specific position
 // console.log(ll.getAt(1));
 
+// get the list current size
 // console.log(ll.size);
