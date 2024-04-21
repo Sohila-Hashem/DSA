@@ -248,3 +248,6 @@ const ll = new LinkedList();
 
 // get the list current size
 // console.log(ll.size);
+
+// print the linked list
+// ll.printList();
