@@ -1,6 +1,6 @@
 import { LinkedList } from "./linked-list.js";
 
-class Stack {
+export class Stack {
     #stack;
     #size;
 
@@ -87,7 +87,7 @@ class Stack {
 // stack.push(5);
 // stack.push(5);
 
-class StackLL {
+export class StackLL {
     #stack;
 
     constructor() {
