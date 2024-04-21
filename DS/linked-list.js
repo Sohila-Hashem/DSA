@@ -106,10 +106,12 @@ export class LinkedList {
 
     // remove at the end
     remove() {
+        let nodeRemoved = {};
         let current = this.#head;
 
         while (current) {
             if (current.next.next === null) {
+                nodeRemoved = current.next;
                 this.#tail = current;
                 current.next = null;
                 this.#size--;
@@ -117,7 +119,7 @@ export class LinkedList {
             }
             current = current.next;
         }
-        return;
+        return nodeRemoved;
     }
 
     // remove at a given position
