@@ -42,45 +42,45 @@ class Stack {
     }
 }
 
-const stack = new Stack();
+// const stack = new Stack();
 
 // is empty?
-console.log(stack.isEmpty());
+// console.log(stack.isEmpty());
 
 // checking an underflow error
-stack.pop();
+// stack.pop();
 
 // checking an underflow error for
 // getting a peek value
-stack.peek();
+// stack.peek();
 
 // push
-stack.push(1);
-stack.push(2);
-stack.push(3);
-stack.push(4);
-stack.push(5);
+// stack.push(1);
+// stack.push(2);
+// stack.push(3);
+// stack.push(4);
+// stack.push(5);
 
 // is empty?
-console.log(stack.isEmpty());
+// console.log(stack.isEmpty());
 
 // pop
-console.log(stack.pop());
+// console.log(stack.pop());
 
 // peak
-console.log(stack.peek());
+// console.log(stack.peek());
 
 // get stack
-console.log(stack.getStack());
+// console.log(stack.getStack());
 
 // size
-console.log(stack.size);
+// console.log(stack.size);
 
 // checking an overflow error
-stack.push(1);
-stack.push(2);
-stack.push(3);
-stack.push(4);
-stack.push(5);
-stack.push(5);
-stack.push(5);
+// stack.push(1);
+// stack.push(2);
+// stack.push(3);
+// stack.push(4);
+// stack.push(5);
+// stack.push(5);
+// stack.push(5);
