@@ -1,4 +1,8 @@
 {
     "type": "module",
-    "main": "."
+    "main": ".",
+    "scripts": {
+        "test-ds-sequential": "mocha ./ds/test/*.spec.js",
+        "test-ds-parallel": "mocha ./ds/test/*.spec.js --parallel4"
+    }
 }
