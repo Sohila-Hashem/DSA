@@ -12,7 +12,7 @@ export class Stack {
     // returning a deep copy of the stack
     // to prevent any accidental mutation
     getStack() {
-        return [...this.#stack];
+        return this.#stack;
     }
 
     get size() {
