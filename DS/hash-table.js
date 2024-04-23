@@ -1,128 +1,132 @@
 export default class HashTable {
-    #size;
-    #loadFactor;
-    #loadFactorLimit = 0.7;
+	#size;
+	#loadFactor;
+	#loadFactorLimit = 0.7;
 
-    constructor(length = 3333) {
-        this.bucket = new Array(length);
-        this.#size = 0;
-    }
+	constructor(length = 3333) {
+		this.bucket = new Array(length);
+		this.#size = 0;
+	}
 
-    get size() {
-        return this.#size;
-    }
+	get map() {
+		return this.bucket.filter((node) => node);
+	}
 
-    // hash a key
-    #hash(key, length) {
-        let hash = 17;
+	get size() {
+		return this.#size;
+	}
 
-        for (let i = 0; i < key.length; i++) {
-            hash *= key.charCodeAt(i) * 13;
-        }
+	// hash a key
+	#hash(key, length) {
+		let hash = 17;
 
-        return hash % length;
-    }
+		for (let i = 0; i < key.length; i++) {
+			hash *= key.charCodeAt(i) * 13;
+		}
 
-    // resize the table
-    #resize() {
-        const newBucket = new Array(this.bucket.length * 2);
+		return hash % length;
+	}
 
-        for (let i = 0; i < this.bucket.length; i++) {
-            const entry = this.bucket[i];
+	// resize the table
+	#resize() {
+		const newBucket = new Array(this.bucket.length * 2);
 
-            if (entry) {
-                entry.forEach((subEntry) => {
-                    const newIndex = this.#hash(subEntry[0], newBucket.length);
-                    const newEntry = newBucket[newIndex];
+		for (let i = 0; i < this.bucket.length; i++) {
+			const entry = this.bucket[i];
 
-                    if (newEntry) {
-                        newEntry.push(subEntry);
-                    } else {
-                        newBucket[newIndex] = [subEntry];
-                    }
-                });
-            }
-        }
+			if (entry) {
+				entry.forEach((subEntry) => {
+					const newIndex = this.#hash(subEntry[0], newBucket.length);
+					const newEntry = newBucket[newIndex];
 
-        this.bucket = newBucket;
-    }
+					if (newEntry) {
+						newEntry.push(subEntry);
+					} else {
+						newBucket[newIndex] = [subEntry];
+					}
+				});
+			}
+		}
 
-    // set a key value pair
-    setKey(key, value) {
-        this.#size++;
-        this.#loadFactor = this.size / this.bucket.length;
+		this.bucket = newBucket;
+	}
 
-        if (this.#loadFactor > this.#loadFactorLimit) {
-            this.#resize();
-        }
+	// set a key value pair
+	setKey(key, value) {
+		this.#size++;
+		this.#loadFactor = this.size / this.bucket.length;
 
-        const index = this.#hash(key, this.bucket.length);
-        const entry = this.bucket[index];
+		if (this.#loadFactor > this.#loadFactorLimit) {
+			this.#resize();
+		}
 
-        // check if the key already exists and if yes,
-        // update it
-        if (entry) {
-            let isFound = false;
-            entry.forEach((subEntry, index) => {
-                if (subEntry[0] === key) {
-                    entry[index][1] = value;
-                    isFound = true;
-                }
-            });
+		const index = this.#hash(key, this.bucket.length);
+		const entry = this.bucket[index];
 
-            if (!isFound) {
-                this.bucket[index].push([key, value]);
-            }
+		// check if the key already exists and if yes,
+		// update it
+		if (entry) {
+			let isFound = false;
+			entry.forEach((subEntry, index) => {
+				if (subEntry[0] === key) {
+					entry[index][1] = value;
+					isFound = true;
+				}
+			});
 
-            return entry;
-        } else {
-            this.bucket[index] = [[key, value]];
-            return [[key, value]];
-        }
-    }
+			if (!isFound) {
+				this.bucket[index].push([key, value]);
+			}
 
-    getKey(key) {
-        const index = this.#hash(key, this.bucket.length);
-        const entry = this.bucket[index];
+			return entry;
+		} else {
+			this.bucket[index] = [[key, value]];
+			return [[key, value]];
+		}
+	}
 
-        if (entry) {
-            let foundEntry;
+	getKey(key) {
+		const index = this.#hash(key, this.bucket.length);
+		const entry = this.bucket[index];
 
-            entry.forEach((subEntry) => {
-                if (subEntry[0] === key) {
-                    foundEntry = subEntry;
-                }
-            });
+		if (entry) {
+			let foundEntry;
 
-            if (foundEntry) {
-                return foundEntry[1];
-            }
-        }
+			entry.forEach((subEntry) => {
+				if (subEntry[0] === key) {
+					foundEntry = subEntry;
+				}
+			});
 
-        return null;
-    }
+			if (foundEntry) {
+				return foundEntry[1];
+			}
+		}
 
-    removeKey(key) {
-        const index = this.#hash(key, this.bucket.length);
-        let entry = this.bucket[index];
+		return null;
+	}
 
-        if (entry) {
-            if (entry.length > 1) {
-                entry.forEach((subEntry, index) => {
-                    if (subEntry[0] === key) {
-                        entry.splice(index, 1);
-                    }
-                });
-            } else {
-                this.bucket[index] = undefined;
-            }
+	removeKey(key) {
+		const index = this.#hash(key, this.bucket.length);
+		let entry = this.bucket[index];
 
-            this.#size--;
-            return true;
-        }
+		if (entry) {
+			if (entry.length > 1) {
+				entry.forEach((subEntry, index) => {
+					if (subEntry[0] === key) {
+						entry.splice(index, 1);
+					}
+				});
+			} else {
+				this.bucket[index] = undefined;
+			}
 
-        return null;
-    }
+			this.#size--;
+			return true;
+		}
+
+		return null;
+	}
 }
 
 // const ht = new HashTable(3);
