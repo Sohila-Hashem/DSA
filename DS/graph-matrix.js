@@ -38,8 +38,23 @@ export class GraphMatrix {
 		}
 	}
 
+	getNode(node) {
+		if (!node) throw new Error("expected an argument of node");
+
+		return this.matrix[this.nodeList[node]];
+	}
+
 	getNodeList() {
 		return Object.entries(this.nodeList);
+	}
+
+	addNode(node) {
+		if (this.nodeList[node]) return;
+
+		if (this.currentNodeIndex > this.size)
+			throw new Error("Graph Overflow");
+
+		this.nodeList[node] = this.currentNodeIndex++;
 	}
 
 	removeNode(node) {
@@ -116,21 +131,6 @@ export class GraphMatrix {
 export class GraphMatrixDirect extends GraphMatrix {
 	constructor(size) {
 		super(size);
-	}
-
-	getNode(node) {
-		if (!node) throw new Error("expected an argument of node");
-
-		return this.matrix[this.nodeList[node]];
-	}
-
-	addNode(node) {
-		if (this.nodeList[node]) return;
-
-		if (this.currentNodeIndex > this.size)
-			throw new Error("Graph Overflow");
-
-		this.nodeList[node] = this.currentNodeIndex++;
 	}
 
 	addEdge(source, destination, weight = 1) {
