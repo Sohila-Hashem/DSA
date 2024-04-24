@@ -26,6 +26,10 @@ export default class GraphList {
 		this.graph = new HashTable(size);
 	}
 
+	get nodes() {
+		return this.getGraph().map((node) => node[0][0]);
+	}
+
 	getGraph() {
 		return this.graph.map;
 	}
