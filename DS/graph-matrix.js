@@ -152,10 +152,7 @@ export class GraphMatrixDirect extends GraphMatrix {
 				this.nodeList
 			);
 
-		const isDestFoundInSrc =
-			!!this.matrix[sourceNodeIndex][destinationNodeIndex];
-
-		if (!isDestFoundInSrc) {
+		if (!this.isNeighbors(source, destination)) {
 			throw new Error(
 				`${source} and ${destination} nodes are not neighbors`
 			);
@@ -176,27 +173,80 @@ export class GraphMatrixDirect extends GraphMatrix {
 	}
 }
 
+export class GraphMatrixIndirect extends GraphMatrix {
+	constructor(size) {
+		super(size);
+	}
+
+	addEdge(source, destination, weight = 1) {
+		const [sourceNodeIndex, destinationNodeIndex] =
+			GraphMatrixUtils.checkExistenceOfNodes(
+				source,
+				destination,
+				this.nodeList
+			);
+
+		this.matrix[sourceNodeIndex][destinationNodeIndex] = weight;
+		this.matrix[destinationNodeIndex][sourceNodeIndex] = weight;
+	}
+
+	removeEdge(source, destination) {
+		const [sourceNodeIndex, destinationNodeIndex] =
+			GraphMatrixUtils.checkExistenceOfNodes(
+				source,
+				destination,
+				this.nodeList
+			);
+
+		if (!this.isNeighbors(source, destination)) {
+			throw new Error(
+				`${source} and ${destination} nodes are not neighbors`
+			);
+		}
+
+		this.matrix[sourceNodeIndex][destinationNodeIndex] = 0;
+		this.matrix[destinationNodeIndex][sourceNodeIndex] = 0;
+	}
+
+	isNeighbors(source, destination) {
+		const [sourceNodeIndex, destinationNodeIndex] =
+			GraphMatrixUtils.checkExistenceOfNodes(
+				source,
+				destination,
+				this.nodeList
+			);
+
+		const isDestFoundInSrc =
+			!!this.matrix[sourceNodeIndex][destinationNodeIndex];
+		const isSrcFoundInDest =
+			!!this.matrix[destinationNodeIndex][sourceNodeIndex];
+
+		return isDestFoundInSrc && isSrcFoundInDest;
+	}
+}
+
 // const graphMatrixDirect = new GraphMatrixDirect();
+// const graphMatrixIndirect = new GraphMatrixIndirect();
 
-// graphMatrixDirect.addNode("A");
-// graphMatrixDirect.addNode("B");
-// graphMatrixDirect.addNode("C");
-// graphMatrixDirect.addNode("D");
-// graphMatrixDirect.addNode("E");
-// graphMatrixDirect.addNode("F");
-// graphMatrixDirect.addNode("G");
-// graphMatrixDirect.addNode("N");
+// graphMatrixIndirect.addNode("A");
+// graphMatrixIndirect.addNode("B");
+// graphMatrixIndirect.addNode("C");
+// graphMatrixIndirect.addNode("D");
+// graphMatrixIndirect.addNode("E");
+// graphMatrixIndirect.addNode("F");
+// graphMatrixIndirect.addNode("G");
+// graphMatrixIndirect.addNode("N");
 
-// graphMatrixDirect.addEdge("A", "B");
-// graphMatrixDirect.addEdge("A", "C", 10);
-// graphMatrixDirect.addEdge("C", "B", 12);
-// graphMatrixDirect.addEdge("C", "F", 14);
-// graphMatrixDirect.addEdge("C", "N", 16);
-// graphMatrixDirect.addEdge("N", "F");
-// graphMatrixDirect.addEdge("B", "D");
-// graphMatrixDirect.addEdge("F", "E");
-// graphMatrixDirect.addEdge("D", "G");
-// graphMatrixDirect.addEdge("E", "G", 7);
+// graphMatrixIndirect.addEdge("A", "B");
+// graphMatrixIndirect.addEdge("A", "C", 10);
+// graphMatrixIndirect.addEdge("C", "B", 12);
+// graphMatrixIndirect.addEdge("C", "F", 14);
+// graphMatrixIndirect.addEdge("C", "N", 16);
+// graphMatrixIndirect.addEdge("N", "F");
+// graphMatrixIndirect.addEdge("B", "D");
+// graphMatrixIndirect.addEdge("F", "E");
+// graphMatrixIndirect.addEdge("D", "G");
+// graphMatrixIndirect.addEdge("E", "G", 7);
 
 // const compareCB = (node) => {
 // 	const nodeName = node + Math.floor(Math.random() * 15);
@@ -206,24 +256,26 @@ export class GraphMatrixDirect extends GraphMatrix {
 // 	return false;
 // };
 
-// console.log(graphMatrixDirect.bfs("A"));
-// console.log(graphMatrixDirect.bfs("C", compareCB));
+// console.log(graphMatrixIndirect.bfs("A"));
+// console.log(graphMatrixIndirect.bfs("C", compareCB));
 
-// console.log(graphMatrixDirect.getNode("C"));
+// console.log(graphMatrixIndirect.getNode("C"));
 
-// graphMatrixDirect.removeNode("C");
+// graphMatrixIndirect.removeNode("C");
 
-// graphMatrixDirect.addNode("I");
+// graphMatrixIndirect.addNode("I");
 
-// graphMatrixDirect.addEdge("I", "B");
+// graphMatrixIndirect.addEdge("I", "B");
 
-// console.log(graphMatrixDirect.isNeighbors("N", "F"));
-// console.log(graphMatrixDirect.isNeighbors("F", "N"));
-// console.log(graphMatrixDirect.isNeighbors("E", "G"));
-// console.log(graphMatrixDirect.isNeighbors("G", "E"));
+// console.log(graphMatrixIndirect.isNeighbors("N", "F"));
+// console.log(graphMatrixIndirect.isNeighbors("F", "N"));
+// console.log(graphMatrixIndirect.isNeighbors("E", "G"));
+// console.log(graphMatrixIndirect.isNeighbors("G", "E"));
+// console.log(graphMatrixIndirect.isNeighbors("I", "E"));
 
-// console.log(graphMatrixDirect.printMatrix());
-// console.log(graphMatrixDirect.getNodeList());
+// graphMatrixIndirect.printMatrix();
+// console.log(graphMatrixIndirect.getNodeList());
 
 // // testing errors when nodes are not neighbors
-// graphMatrixDirect.removeEdge("B", "A");
+// graphMatrixIndirect.removeEdge("B", "A"); // for Indirect graphs
+// graphMatrixIndirect.removeEdge("I", "A"); // for direct graphs
