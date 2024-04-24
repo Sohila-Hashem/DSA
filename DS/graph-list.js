@@ -35,6 +35,26 @@ export default class GraphList {
 		return this.graph.getKey(node);
 	}
 
+	removeNode(node) {
+		const graph = this.getGraph();
+
+		for (let i = 0; i < graph.length; i++) {
+			const graphEntry = graph[i];
+
+			graphEntry.forEach((graphNode) => {
+				const nodeNeighbors = graphNode[1];
+
+				this.graph.setKey(
+					graphNode[0],
+					nodeNeighbors.filter((neighbor) => neighbor[0] !== node)
+				);
+			});
+		}
+
+		this.graph.removeKey(node);
+		return true;
+	}
+
 	bfs(start, compareCB) {
 		const startNodeNeighbors = this.getNodeNeighbors(start);
 
@@ -130,26 +150,6 @@ export class GraphListDirect extends GraphList {
 			sourceNode.filter((neighbor) => neighbor[0] !== destination)
 		);
 	}
-
-	removeNode(node) {
-		const graph = this.getGraph();
-
-		for (let i = 0; i < graph.length; i++) {
-			const graphEntry = graph[i];
-
-			graphEntry.forEach((graphNode) => {
-				const nodeNeighbors = graphNode[1];
-
-				this.graph.setKey(
-					graphNode[0],
-					nodeNeighbors.filter((neighbor) => neighbor[0] !== node)
-				);
-			});
-		}
-
-		this.graph.removeKey(node);
-		return true;
-	}
 }
 
 export class GraphListIndirect extends GraphList {
@@ -221,26 +221,6 @@ export class GraphListIndirect extends GraphList {
 			destination,
 			destinationNode.filter((neighbor) => neighbor[0] !== source)
 		);
-	}
-
-	removeNode(node) {
-		const graph = this.getGraph();
-
-		for (let i = 0; i < graph.length; i++) {
-			const graphEntry = graph[i];
-
-			graphEntry.forEach((graphNode) => {
-				const nodeNeighbors = graphNode[1];
-
-				this.graph.setKey(
-					graphNode[0],
-					nodeNeighbors.filter((neighbor) => neighbor[0] !== node)
-				);
-			});
-		}
-
-		this.graph.removeKey(node);
-		return true;
 	}
 }
 
