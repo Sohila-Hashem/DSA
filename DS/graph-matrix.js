@@ -1,3 +1,4 @@
+import { Queue } from "./queue.js";
 class GraphMatrixUtils {
 	static getNodeIndex(node, nodeList) {
 		if (!node) throw new Error("expected an argument of node");
@@ -5,7 +6,6 @@ class GraphMatrixUtils {
 		return nodeList[node];
 	}
 
-	// checks if two nodes already exists or not
 	static checkExistenceOfNodes(source, destination, nodeList) {
 		if (!source || !destination) {
 			throw new Error("source and destination must be defined");
@@ -15,7 +15,9 @@ class GraphMatrixUtils {
 		const destinationIndex = this.getNodeIndex(destination, nodeList);
 
 		if (sourceIndex === undefined || destinationIndex === undefined) {
-			throw new Error("either source or destination does not exist");
+			throw new Error(
+				`Either node ${source} or ${destination} is not defined`
+			);
 		}
 
 		return [sourceIndex, destinationIndex];
@@ -23,132 +25,45 @@ class GraphMatrixUtils {
 }
 
 export class GraphMatrix {
-	#size;
-	#nodeList;
-	#matrix;
-	#currentNodeIndex;
+	currentNodeIndex;
 
 	constructor(size = 10) {
-		this.#size = size;
-		this.#nodeList = {};
-		this.#matrix = [];
-		this.#currentNodeIndex = 0;
+		this.size = size;
+		this.nodeList = {};
+		this.matrix = [];
+		this.currentNodeIndex = 0;
 
 		for (let i = 0; i < size; i++) {
-			this.#matrix.push(new Array(size).fill(0));
+			this.matrix.push(new Array(size).fill(0));
 		}
 	}
 
 	getNodeList() {
-		return Object.entries(this.#nodeList);
-	}
-
-	// return a deep copy of the matrix
-	// to mitigate mistaken reassignments
-	getMatrix() {
-		return [...this.#matrix];
-	}
-
-	getNode(node) {
-		if (!node) throw new Error("expected an argument of node");
-
-		return this.#matrix[this.#nodeList[node]];
-	}
-
-	addNode(node) {
-		if (this.#nodeList[node])
-			throw new Error(`node: ${node} already exists`);
-
-		if (this.#currentNodeIndex > this.#size)
-			throw new Error("the graph is in full capacity");
-
-		this.#nodeList[node] = this.#currentNodeIndex++;
-	}
-
-	addEdge(source, destination, options = { isDirected: false, weight: 1 }) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.#nodeList
-			);
-
-		if (!options.isDirected) {
-			this.#matrix[destinationNodeIndex][sourceNodeIndex] =
-				options.weight || 1;
-		}
-
-		this.#matrix[sourceNodeIndex][destinationNodeIndex] =
-			options.weight || 1;
-	}
-
-	removeEdge(source, destination) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.#nodeList
-			);
-
-		const isDestFoundInSrc =
-			!!this.#matrix[sourceNodeIndex][destinationNodeIndex];
-		const isSrcFoundInDest =
-			!!this.#matrix[destinationNodeIndex][sourceNodeIndex];
-
-		if (!isDestFoundInSrc) {
-			throw new Error(
-				`${source} and ${destination} nodes are not connected`
-			);
-		}
-
-		if (isSrcFoundInDest && isDestFoundInSrc) {
-			this.#matrix[destinationNodeIndex][sourceNodeIndex] = 0;
-		}
-
-		this.#matrix[sourceNodeIndex][destinationNodeIndex] = 0;
+		return Object.entries(this.nodeList);
 	}
 
 	removeNode(node) {
-		const nodeIndex = GraphMatrixUtils.getNodeIndex(node, this.#nodeList);
+		const nodeIndex = GraphMatrixUtils.getNodeIndex(node, this.nodeList);
 
-		for (let i = 0; i < this.#matrix.length; i++) {
-			this.#matrix[i].splice(nodeIndex, 1);
-			this.#matrix[i].push(0);
+		for (let i = 0; i < this.matrix.length; i++) {
+			this.matrix[i].splice(nodeIndex, 1);
+			this.matrix[i].push(0);
 		}
 
-		for (let node in this.#nodeList) {
-			const nodeCurrentIndex = this.#nodeList[node];
+		for (let node in this.nodeList) {
+			const nodeCurrentIndex = this.nodeList[node];
 
 			if (nodeCurrentIndex > nodeIndex) {
-				this.#nodeList[node] -= 1;
+				this.nodeList[node] -= 1;
 			}
 		}
 
-		this.#matrix.splice(nodeIndex, 1);
+		this.matrix.splice(nodeIndex, 1);
 
-		this.#matrix.push(new Array(10).fill(0));
+		this.matrix.push(new Array(10).fill(0));
 
-		this.#currentNodeIndex--;
-		delete this.#nodeList[node];
-	}
-
-	isNeighbors(source, destination) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.#nodeList
-			);
-
-		const isDestFoundInSrc =
-			!!this.#matrix[sourceNodeIndex][destinationNodeIndex];
-		const isSrcFoundInDest =
-			!!this.#matrix[destinationNodeIndex][sourceNodeIndex];
-
-		if (isDestFoundInSrc || (isDestFoundInSrc && isSrcFoundInDest))
-			return true;
-
-		return false;
+		this.currentNodeIndex--;
+		delete this.nodeList[node];
 	}
 
 	// O(V^2)
@@ -157,7 +72,7 @@ export class GraphMatrix {
 		const result = [];
 		const visited = {};
 
-		if (this.#nodeList[start] === undefined)
+		if (GraphMatrixUtils.getNodeIndex(start, this.nodeList) === undefined)
 			throw new Error(`Node ${start} does not exist in the graph`);
 
 		queue.enqueue(start);
@@ -187,56 +102,128 @@ export class GraphMatrix {
 
 		return result;
 	}
+
+	printMatrix() {
+		const nodes = Object.keys(this.nodeList);
+		console.log(nodes);
+
+		for (let i = 0; i < this.matrix.length; i++) {
+			console.log(nodes[i], this.matrix[i]);
+		}
+	}
 }
 
-// const graphMatrix = new GraphMatrix();
-// const isDirected = true;
+export class GraphMatrixDirect extends GraphMatrix {
+	constructor(size) {
+		super(size);
+	}
 
-// graphMatrix.addNode("A");
-// graphMatrix.addNode("B");
-// graphMatrix.addNode("C");
-// graphMatrix.addNode("D");
-// graphMatrix.addNode("E");
-// graphMatrix.addNode("F");
-// graphMatrix.addNode("G");
-// graphMatrix.addNode("N");
+	getNode(node) {
+		if (!node) throw new Error("expected an argument of node");
 
-// graphMatrix.addEdge("A", "B");
-// graphMatrix.addEdge("A", "C", { isDirected, weight: 10 });
-// graphMatrix.addEdge("C", "B", { isDirected, weight: 12 });
-// graphMatrix.addEdge("C", "F", { isDirected, weight: 14 });
-// graphMatrix.addEdge("C", "N", { isDirected, weight: 16 });
-// graphMatrix.addEdge("N", "F", { isDirected });
-// graphMatrix.addEdge("B", "D", { isDirected });
-// graphMatrix.addEdge("F", "E", { isDirected });
-// graphMatrix.addEdge("D", "G", { isDirected });
-// graphMatrix.addEdge("E", "G", { weight: 7 });
+		return this.matrix[this.nodeList[node]];
+	}
 
-// console.log(graphMatrix.getNode("C"));
+	addNode(node) {
+		if (this.nodeList[node]) return;
 
-// graphMatrix.removeNode("C");
+		if (this.currentNodeIndex > this.size)
+			throw new Error("Graph Overflow");
 
-// graphMatrix.addNode("I");
+		this.nodeList[node] = this.currentNodeIndex++;
+	}
 
-// graphMatrix.addEdge("I", "B");
+	addEdge(source, destination, weight = 1) {
+		const [sourceNodeIndex, destinationNodeIndex] =
+			GraphMatrixUtils.checkExistenceOfNodes(
+				source,
+				destination,
+				this.nodeList
+			);
 
-// graphMatrix.removeEdge("B", "A");
+		this.matrix[sourceNodeIndex][destinationNodeIndex] = weight;
+	}
 
-// console.log(graphMatrix.isNeighbors("N", "F"));
-// console.log(graphMatrix.isNeighbors("F", "N"));
-// console.log(graphMatrix.isNeighbors("E", "G"));
-// console.log(graphMatrix.isNeighbors("G", "E"));
+	removeEdge(source, destination) {
+		const [sourceNodeIndex, destinationNodeIndex] =
+			GraphMatrixUtils.checkExistenceOfNodes(
+				source,
+				destination,
+				this.nodeList
+			);
 
-// console.log(graphMatrix.getMatrix());
-// console.log(graphMatrix.getNodeList());
+		const isDestFoundInSrc =
+			!!this.matrix[sourceNodeIndex][destinationNodeIndex];
+
+		if (!isDestFoundInSrc) {
+			throw new Error(
+				`${source} and ${destination} nodes are not neighbors`
+			);
+		}
+
+		this.matrix[sourceNodeIndex][destinationNodeIndex] = 0;
+	}
+
+	isNeighbors(source, destination) {
+		const [sourceNodeIndex, destinationNodeIndex] =
+			GraphMatrixUtils.checkExistenceOfNodes(
+				source,
+				destination,
+				this.nodeList
+			);
+
+		return !!this.matrix[sourceNodeIndex][destinationNodeIndex];
+	}
+}
+
+// const graphMatrixDirect = new GraphMatrixDirect();
+
+// graphMatrixDirect.addNode("A");
+// graphMatrixDirect.addNode("B");
+// graphMatrixDirect.addNode("C");
+// graphMatrixDirect.addNode("D");
+// graphMatrixDirect.addNode("E");
+// graphMatrixDirect.addNode("F");
+// graphMatrixDirect.addNode("G");
+// graphMatrixDirect.addNode("N");
+
+// graphMatrixDirect.addEdge("A", "B");
+// graphMatrixDirect.addEdge("A", "C", 10);
+// graphMatrixDirect.addEdge("C", "B", 12);
+// graphMatrixDirect.addEdge("C", "F", 14);
+// graphMatrixDirect.addEdge("C", "N", 16);
+// graphMatrixDirect.addEdge("N", "F");
+// graphMatrixDirect.addEdge("B", "D");
+// graphMatrixDirect.addEdge("F", "E");
+// graphMatrixDirect.addEdge("D", "G");
+// graphMatrixDirect.addEdge("E", "G", 7);
 
 // const compareCB = (node) => {
-//     const nodeName = node + Math.floor(Math.random() * 15);
-//     if (nodeName.slice(1) % 2 === 0) {
-//         return true;
-//     }
-//     return false;
+// 	const nodeName = node + Math.floor(Math.random() * 15);
+// 	if (nodeName.slice(1) % 2 === 0) {
+// 		return true;
+// 	}
+// 	return false;
 // };
 
-// console.log(graphMatrix.bfs("A"));
-// console.log(graphMatrix.bfs("C", compareCB));
+// console.log(graphMatrixDirect.bfs("A"));
+// console.log(graphMatrixDirect.bfs("C", compareCB));
+
+// console.log(graphMatrixDirect.getNode("C"));
+
+// graphMatrixDirect.removeNode("C");
+
+// graphMatrixDirect.addNode("I");
+
+// graphMatrixDirect.addEdge("I", "B");
+
+// console.log(graphMatrixDirect.isNeighbors("N", "F"));
+// console.log(graphMatrixDirect.isNeighbors("F", "N"));
+// console.log(graphMatrixDirect.isNeighbors("E", "G"));
+// console.log(graphMatrixDirect.isNeighbors("G", "E"));
+
+// console.log(graphMatrixDirect.printMatrix());
+// console.log(graphMatrixDirect.getNodeList());
+
+// // testing errors when nodes are not neighbors
+// graphMatrixDirect.removeEdge("B", "A");

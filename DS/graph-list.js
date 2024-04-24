@@ -110,7 +110,7 @@ export class GraphListDirect extends GraphList {
 		}
 
 		if (!this.getNodeNeighbors(node)) {
-			this.graph.setKey(node.lowerCase(), []);
+			this.graph.setKey(node, []);
 		}
 		return;
 	}
@@ -244,46 +244,46 @@ export class GraphListIndirect extends GraphList {
 	}
 }
 
-const directedGraph = new GraphListDirect();
-const indirectGraph = new GraphListIndirect();
+// const directedGraph = new GraphListDirect();
+// const indirectGraph = new GraphListIndirect();
 
-indirectGraph.addNode("you");
-indirectGraph.addNode("alice");
-indirectGraph.addNode("bob");
-indirectGraph.addNode("claire");
-indirectGraph.addNode("peggy");
-indirectGraph.addNode("anuj");
-indirectGraph.addNode("Sohila");
+// indirectGraph.addNode("you");
+// indirectGraph.addNode("alice");
+// indirectGraph.addNode("bob");
+// indirectGraph.addNode("claire");
+// indirectGraph.addNode("peggy");
+// indirectGraph.addNode("anuj");
+// indirectGraph.addNode("Sohila");
 
-indirectGraph.addEdge("you", "alice");
-indirectGraph.addEdge("you", "bob");
-indirectGraph.addEdge("you", "claire");
-indirectGraph.addEdge("claire", "anuj");
-indirectGraph.addEdge("bob", "peggy", 8);
-indirectGraph.addEdge("alice", "peggy");
-indirectGraph.addEdge("alice", "peggy");
+// indirectGraph.addEdge("you", "alice");
+// indirectGraph.addEdge("you", "bob");
+// indirectGraph.addEdge("you", "claire");
+// indirectGraph.addEdge("claire", "anuj");
+// indirectGraph.addEdge("bob", "peggy", 8);
+// indirectGraph.addEdge("alice", "peggy");
+// indirectGraph.addEdge("alice", "peggy");
 
-const callbackFun = (node) => {
-	// we assuming here that mango sellers
-	// are the ones with a name length higher than 3
-	if (node.length > 4) return true;
-	return false;
-};
-const mangoSellersNoCB = indirectGraph.bfs("you");
-const mangoSellers = indirectGraph.bfs("you", callbackFun);
+// const callbackFun = (node) => {
+// 	// we assuming here that mango sellers
+// 	// are the ones with a name length higher than 3
+// 	if (node.length > 4) return true;
+// 	return false;
+// };
+// const mangoSellersNoCB = indirectGraph.bfs("you");
+// const mangoSellers = indirectGraph.bfs("you", callbackFun);
 
-console.log(mangoSellersNoCB);
-console.log(mangoSellers);
+// console.log(mangoSellersNoCB);
+// console.log(mangoSellers);
 
-console.log(indirectGraph.isNeighbors("you", "alice"));
-console.log(indirectGraph.isNeighbors("anuj", "claire"));
-console.log(indirectGraph.isNeighbors("Sohila", "claire"));
+// console.log(indirectGraph.isNeighbors("you", "alice"));
+// console.log(indirectGraph.isNeighbors("anuj", "claire"));
+// console.log(indirectGraph.isNeighbors("Sohila", "claire"));
 
-indirectGraph.removeNode("bob");
+// indirectGraph.removeNode("bob");
 
-console.log(indirectGraph.getNodeNeighbors("you"));
+// console.log(indirectGraph.getNodeNeighbors("you"));
 
-console.log(indirectGraph.getGraph());
+// console.log(indirectGraph.getGraph());
 
-indirectGraph.removeEdge("alice", "peggy");
-indirectGraph.removeEdge("peggy", "alice");
+// indirectGraph.removeEdge("alice", "peggy");
+// indirectGraph.removeEdge("peggy", "alice");
