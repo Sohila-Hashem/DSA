@@ -1,5 +1,5 @@
 import HashTable from "./hash-table.js";
-import { Queue } from "./queue.js";
+import { Queue, PriorityQueue } from "./queue.js";
 
 class GraphListUtils {
 	static getEdgeNodes(source, destination, graph) {
@@ -94,6 +94,60 @@ export default class GraphList {
 
 		return result;
 	}
+
+	shortestPath(start) {
+		if (!this.getNodeNeighbors(start))
+			throw new Error(`"${start}" is not a defined node in the graph`);
+
+		const paths = {};
+		const visited = {};
+		const distances = {};
+		const nodes = this.nodes;
+		const PQueue = new PriorityQueue();
+
+		nodes.forEach((node) => {
+			distances[node] = Infinity;
+			paths[node] = [];
+		});
+
+		distances[start] = 0;
+		PQueue.enqueue(start, 0);
+
+		while (!PQueue.isEmpty()) {
+			const { value: currentNode } = PQueue.dequeue();
+
+			if (!visited[currentNode]) {
+				const currentNodeNeighbors = this.getNodeNeighbors(currentNode);
+
+				visited[currentNode] = true;
+
+				currentNodeNeighbors.forEach((neighbor) => {
+					const [neighborName, neighborWeight] = neighbor;
+
+					if (neighborWeight < 0)
+						throw new Error(
+							"this method can not work on negative weights, use Bellman-Ford instead"
+						);
+
+					const calculatedNeighborDistance =
+						distances[currentNode] + neighborWeight;
+
+					const currentNeighborDistance = distances[neighborName];
+
+					if (calculatedNeighborDistance < currentNeighborDistance) {
+						distances[neighborName] = calculatedNeighborDistance;
+
+						paths[neighborName] =
+							paths[currentNode].concat(currentNode);
+
+						PQueue.enqueue(neighborName, neighborWeight);
+					}
+				});
+			}
+		}
+
+		return { distances, paths };
+	}
 }
 
 export class GraphListDirect extends GraphList {
@@ -115,7 +169,7 @@ export class GraphListDirect extends GraphList {
 		return !!isFoundDestInSrc;
 	}
 
-	addEdge(source, destination, weight = 1) {
+	addEdge(source, destination, weight = 0) {
 		if (this.isNeighbors(source, destination)) return;
 
 		const [sourceNode] = GraphListUtils.getEdgeNodes(
@@ -231,21 +285,27 @@ export class GraphListIndirect extends GraphList {
 // const directedGraph = new GraphListDirect();
 // const indirectGraph = new GraphListIndirect();
 
-// indirectGraph.addNode("you");
-// indirectGraph.addNode("alice");
-// indirectGraph.addNode("bob");
-// indirectGraph.addNode("claire");
-// indirectGraph.addNode("peggy");
-// indirectGraph.addNode("anuj");
+// indirectGraph.addNode("Book");
+// indirectGraph.addNode("Rare-LP");
+// indirectGraph.addNode("Poster");
+// indirectGraph.addNode("Drum-set");
+// indirectGraph.addNode("Bass-Guitar");
+// indirectGraph.addNode("Piano");
 // indirectGraph.addNode("Sohila");
 
-// indirectGraph.addEdge("you", "alice");
-// indirectGraph.addEdge("you", "bob");
-// indirectGraph.addEdge("you", "claire");
-// indirectGraph.addEdge("claire", "anuj");
-// indirectGraph.addEdge("bob", "peggy", 8);
-// indirectGraph.addEdge("alice", "peggy");
-// indirectGraph.addEdge("alice", "peggy");
+// indirectGraph.addEdge("Book", "Rare-LP", 5);
+// indirectGraph.addEdge("Book", "Poster", 0);
+// indirectGraph.addEdge("Poster", "Bass-Guitar", 30);
+// indirectGraph.addEdge("Poster", "Drum-set", 35);
+// indirectGraph.addEdge("Rare-LP", "Bass-Guitar", 15);
+// indirectGraph.addEdge("Rare-LP", "Drum-set", 20);
+// indirectGraph.addEdge("Bass-Guitar", "Piano", 20);
+// indirectGraph.addEdge("Drum-set", "Piano", 10);
+
+// const { paths, distances } = indirectGraph.shortestPath("Book");
+
+// console.log(paths);
+// console.log(distances);
 
 // const callbackFun = (node) => {
 // 	// we assuming here that mango sellers
@@ -253,21 +313,21 @@ export class GraphListIndirect extends GraphList {
 // 	if (node.length > 4) return true;
 // 	return false;
 // };
-// const mangoSellersNoCB = indirectGraph.bfs("you");
-// const mangoSellers = indirectGraph.bfs("you", callbackFun);
+// const mangoSellersNoCB = indirectGraph.bfs("Book");
+// const mangoSellers = indirectGraph.bfs("Book", callbackFun);
 
 // console.log(mangoSellersNoCB);
 // console.log(mangoSellers);
 
-// console.log(indirectGraph.isNeighbors("you", "alice"));
-// console.log(indirectGraph.isNeighbors("anuj", "claire"));
-// console.log(indirectGraph.isNeighbors("Sohila", "claire"));
+// console.log(indirectGraph.isNeighbors("Book", "Rare-LP"));
+// console.log(indirectGraph.isNeighbors("Rare-LP", "Book"));
+// console.log(indirectGraph.isNeighbors("Sohila", "Book"));
 
 // indirectGraph.removeNode("bob");
 
-// console.log(indirectGraph.getNodeNeighbors("you"));
+// console.log(indirectGraph.getNodeNeighbors("Book"));
 
 // console.log(indirectGraph.getGraph());
 
-// indirectGraph.removeEdge("alice", "peggy");
-// indirectGraph.removeEdge("peggy", "alice");
+// indirectGraph.removeEdge("Book", "Rare-LP");
+// indirectGraph.removeEdge("Book", "Sohila");
