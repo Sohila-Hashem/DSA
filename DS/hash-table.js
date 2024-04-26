@@ -3,7 +3,7 @@ export default class HashTable {
 	#loadFactor;
 	#loadFactorLimit = 0.7;
 
-	constructor(length = 3333) {
+	constructor(length = 1511) {
 		this.bucket = new Array(length);
 		this.#size = 0;
 	}
