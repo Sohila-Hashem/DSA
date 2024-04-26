@@ -1,4 +1,4 @@
-import { Queue } from "./queue.js";
+import { Queue, PriorityQueue } from "./queue.js";
 class GraphMatrixUtils {
 	static getNodeIndex(node, nodeList) {
 		if (!node) throw new Error("expected an argument of node");
@@ -116,6 +116,62 @@ export class GraphMatrix {
 		}
 
 		return result;
+	}
+
+	shortestPath(start) {
+		if (!this.getNode(start))
+			throw new Error(`${start} is not a defined node in the graph`);
+
+		const paths = {};
+		const visited = {};
+		const distances = {};
+		const PQueue = new PriorityQueue();
+		const nodes = Object.keys(this.nodeList);
+
+		nodes.forEach((node) => {
+			distances[node] = Infinity;
+			paths[node] = [];
+		});
+
+		distances[start] = 0;
+		PQueue.enqueue(start, 0);
+
+		while (!PQueue.isEmpty()) {
+			const { value: currentNode } = PQueue.dequeue();
+
+			if (!visited[currentNode]) {
+				visited[currentNode] = true;
+
+				const currentNodeNeighbors = this.getNode(currentNode);
+
+				currentNodeNeighbors.forEach((neighborWeight, index) => {
+					if (neighborWeight) {
+						const neighborNodeName = nodes[index];
+						const calculatedNeighborDistance =
+							distances[currentNode] + neighborWeight;
+						const currentNeighborDistance =
+							distances[neighborNodeName];
+
+						if (neighborWeight < 0)
+							throw new Error(
+								"this method can not work on negative weights, use Bellman-Ford instead"
+							);
+
+						if (
+							calculatedNeighborDistance < currentNeighborDistance
+						) {
+							distances[neighborNodeName] =
+								calculatedNeighborDistance;
+							paths[neighborNodeName] =
+								paths[currentNode].concat(currentNode);
+							PQueue.enqueue(neighborNodeName, neighborWeight);
+						}
+					}
+				});
+			}
+		}
+
+		return { distances, paths };
 	}
 
 	printMatrix() {
@@ -237,16 +293,20 @@ export class GraphMatrixIndirect extends GraphMatrix {
 // graphMatrixIndirect.addNode("G");
 // graphMatrixIndirect.addNode("N");
 
-// graphMatrixIndirect.addEdge("A", "B");
-// graphMatrixIndirect.addEdge("A", "C", 10);
-// graphMatrixIndirect.addEdge("C", "B", 12);
+// graphMatrixIndirect.addEdge("A", "B", 12);
+// graphMatrixIndirect.addEdge("A", "C", 2);
+// graphMatrixIndirect.addEdge("C", "B", 9);
 // graphMatrixIndirect.addEdge("C", "F", 14);
 // graphMatrixIndirect.addEdge("C", "N", 16);
-// graphMatrixIndirect.addEdge("N", "F");
-// graphMatrixIndirect.addEdge("B", "D");
-// graphMatrixIndirect.addEdge("F", "E");
-// graphMatrixIndirect.addEdge("D", "G");
+// graphMatrixIndirect.addEdge("N", "F", 5);
+// graphMatrixIndirect.addEdge("B", "D", 7);
+// graphMatrixIndirect.addEdge("F", "E", 15);
+// graphMatrixIndirect.addEdge("D", "G", 8);
 // graphMatrixIndirect.addEdge("E", "G", 7);
+
+// const { distances, paths } = graphMatrixIndirect.shortestPath("C");
+// console.log(distances);
+// console.log(paths);
 
 // const compareCB = (node) => {
 // 	const nodeName = node + Math.floor(Math.random() * 15);
