@@ -1,126 +1,135 @@
 export class Queue {
-    constructor(maxSize) {
-        this.queue = [];
-        this.maxSize = maxSize || 1000;
-        this.front = -1;
-        this.rear = -1;
-    }
+	constructor(maxSize) {
+		this.queue = [];
+		this.maxSize = maxSize || 1000;
+		this.front = -1;
+		this.rear = -1;
+	}
 
-    getSize() {
-        return this.rear - this.front + 1;
-    }
+	getSize() {
+		return this.rear - this.front + 1;
+	}
 
-    // enqueue
-    enqueue(value) {
-        if (value === undefined) throw new Error("value is defined");
+	// enqueue
+	enqueue(value) {
+		if (value === undefined) throw new Error("value is defined");
 
-        if (this.isFull()) {
-            throw new Error("Queue is of max size");
-        }
+		if (this.isFull()) {
+			throw new Error("Queue is of max size");
+		}
 
-        if (this.front === -1) {
-            this.front++;
-        }
+		if (this.front === -1) {
+			this.front++;
+		}
 
-        this.queue[++this.rear] = value;
-    }
+		this.queue[++this.rear] = value;
+	}
 
-    // dequeue
-    dequeue() {
-        if (this.isEmpty()) {
-            throw new Error("Queue is empty");
-        }
+	// dequeue
+	dequeue() {
+		if (this.isEmpty()) {
+			throw new Error("Queue is empty");
+		}
 
-        const tempFront = this.front;
+		const tempFront = this.front;
 
-        return this.queue[this.front++];
-    }
+		return this.queue[this.front++];
+	}
 
-    // get the peak/front element from the queue without removing it
-    getPeak() {
-        if (this.isEmpty()) {
-            throw new Error("Queue is empty");
-        }
+	// get the peak/front element from the queue without removing it
+	getPeak() {
+		if (this.isEmpty()) {
+			throw new Error("Queue is empty");
+		}
 
-        return this.queue[this.front];
-    }
+		return this.queue[this.front];
+	}
 
-    // is the queue empty
-    isEmpty() {
-        return this.front === -1 || this.front > this.rear;
-    }
+	// is the queue empty
+	isEmpty() {
+		return this.front === -1 || this.front > this.rear;
+	}
 
-    // is the queue full
-    isFull() {
-        return this.getSize() === this.maxSize - 1;
-    }
+	// is the queue full
+	isFull() {
+		return this.getSize() === this.maxSize - 1;
+	}
 
-    // print queue
-    printQueue() {
-        if (this.isEmpty()) {
-            throw new Error("Queue is empty");
-        }
+	// print queue
+	printQueue() {
+		if (this.isEmpty()) {
+			throw new Error("Queue is empty");
+		}
 
-        const queueLen = this.queue.length;
-        for (let i = this.front; i < queueLen; i++) {
-            console.log(this.queue[i]);
-        }
-    }
+		const queueLen = this.queue.length;
+		for (let i = this.front; i < queueLen; i++) {
+			console.log(this.queue[i]);
+		}
+	}
+
+	clearQueue() {
+		this.queue = [];
+		this.front = -1;
+		this.rear = -1;
+	}
 }
 
-const queue = new Queue();
+// const queue = new Queue();
 
-queue.enqueue(8);
-queue.enqueue(1);
-queue.enqueue(12);
-queue.enqueue(9);
+// queue.enqueue(8);
+// queue.enqueue(1);
+// queue.enqueue(12);
+// queue.enqueue(9);
 
-console.log(queue.dequeue());
+// console.log(queue.dequeue());
 
-queue.printQueue();
+// queue.printQueue();
 
-console.log(queue.getPeak());
+// console.log(queue.getPeak());
 
 class PriorityQueueEntry {
-    constructor(value, priority) {
-        this.value = value;
-        this.priority = priority;
-    }
+	constructor(value, priority) {
+		this.value = value;
+		this.priority = priority;
+	}
 }
 
 export class PriorityQueue extends Queue {
-    #currentMaxPriority = 0;
+	#currentMaxPriority = 0;
 
-    constructor() {
-        super();
-    }
+	constructor() {
+		super();
+	}
 
-    enqueue(value, priority) {
-        if (priority === undefined) throw new Error("priority must be defined");
+	clearQueue() {
+		super.clearQueue();
+		this.#currentMaxPriority = 0;
+	}
 
-        if (priority < 0) throw new Error("underflow priority number");
+	enqueue(value, priority) {
+		if (priority === undefined) throw new Error("priority must be defined");
 
-        if (this.isFull()) {
-            throw new Error("Queue is of max size");
-        }
+		if (this.isFull()) {
+			throw new Error("Queue is of max size");
+		}
 
-        const pqEntry = new PriorityQueueEntry(value, priority);
+		const pqEntry = new PriorityQueueEntry(value, priority);
 
-        if (priority >= this.#currentMaxPriority) {
-            this.#currentMaxPriority = priority;
-            super.enqueue(pqEntry);
-            return;
-        }
+		if (priority >= this.#currentMaxPriority) {
+			this.#currentMaxPriority = priority;
+			super.enqueue(pqEntry);
+			return;
+		}
 
-        for (let i = this.front; i < this.queue.length; i++) {
-            if (this.queue[i].priority > priority) {
-                this.queue.splice(i, 0, pqEntry);
-                this.rear++;
-                break;
-            }
-        }
-        return;
-    }
+		for (let i = this.front; i < this.queue.length; i++) {
+			if (this.queue[i].priority > priority) {
+				this.queue.splice(i, 0, pqEntry);
+				this.rear++;
+				break;
+			}
+		}
+		return;
+	}
 }
 
 // const priorityQueue = new PriorityQueue();
