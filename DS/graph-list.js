@@ -4,18 +4,14 @@ import { Queue, PriorityQueue } from "./queue.js";
 class GraphListUtils {
 	static getEdgeNodes(source, destination, graph) {
 		if (!source || !destination) {
-			throw new Error(
-				"source and destination nodes name must be defined"
-			);
+			throw new Error("source and destination nodes name must be defined");
 		}
 
 		const sourceNode = graph.getKey(source);
 		const destinationNode = graph.getKey(destination);
 
 		if (!sourceNode || !destinationNode)
-			throw new Error(
-				`Either ${source} or ${destination} nodes are not defined`
-			);
+			throw new Error(`Either ${source} or ${destination} nodes are not defined`);
 
 		return [sourceNode, destinationNode];
 	}
@@ -75,8 +71,7 @@ export default class GraphList {
 			const currentNodeName = queue.dequeue();
 
 			if (!visited[currentNodeName]) {
-				const currentNodeNeighbors =
-					this.getNodeNeighbors(currentNodeName);
+				const currentNodeNeighbors = this.getNodeNeighbors(currentNodeName);
 
 				for (let i = 0; i < currentNodeNeighbors.length; i++) {
 					queue.enqueue(currentNodeNeighbors[i][0]);
@@ -95,7 +90,7 @@ export default class GraphList {
 		return result;
 	}
 
-	shortestPath(start) {
+	shortestPath(start, target) {
 		if (!this.getNodeNeighbors(start))
 			throw new Error(`"${start}" is not a defined node in the graph`);
 
@@ -117,29 +112,17 @@ export default class GraphList {
 			const { value: currentNode } = PQueue.dequeue();
 
 			if (!visited[currentNode]) {
-				const currentNodeNeighbors = this.getNodeNeighbors(currentNode);
-
 				visited[currentNode] = true;
+				const currentNodeNeighbors = this.getNodeNeighbors(currentNode);
 
 				currentNodeNeighbors.forEach((neighbor) => {
 					const [neighborName, neighborWeight] = neighbor;
-
-					if (neighborWeight < 0)
-						throw new Error(
-							"this method can not work on negative weights, use Bellman-Ford instead"
-						);
-
-					const calculatedNeighborDistance =
-						distances[currentNode] + neighborWeight;
-
+					const calculatedNeighborDistance = distances[currentNode] + neighborWeight;
 					const currentNeighborDistance = distances[neighborName];
 
 					if (calculatedNeighborDistance < currentNeighborDistance) {
 						distances[neighborName] = calculatedNeighborDistance;
-
-						paths[neighborName] =
-							paths[currentNode].concat(currentNode);
-
+						paths[neighborName] = paths[currentNode].concat(currentNode);
 						PQueue.enqueue(neighborName, neighborWeight);
 					}
 				});
@@ -147,6 +130,70 @@ export default class GraphList {
 		}
 
 		return { distances, paths };
+	}
+
+	bellmanFord(start) {
+		if (!this.getNodeNeighbors(start))
+			throw new Error(`start: ${start} is not a defined node in the graph!`);
+
+		const nodes = this.nodes;
+		const distances = {};
+		const parents = {};
+		const cycles = [];
+
+		nodes.forEach((node) => {
+			distances[node] = Infinity;
+		});
+
+		distances[start] = 0;
+
+		// relaxing edges between nodes
+		for (let i = 0; i < nodes.length - 1; i++) {
+			nodes.forEach((node) => {
+				if (distances[node] === Infinity) {
+					return;
+				}
+
+				const currentNodeNeighbors = this.getNodeNeighbors(node);
+				currentNodeNeighbors.forEach((neighbor) => {
+					const [neighborName, neighborWeight] = neighbor;
+
+					const calculatedNeighborDistance = distances[node] + neighborWeight;
+					const currentNeighborDist = distances[neighborName];
+
+					if (calculatedNeighborDistance < currentNeighborDist) {
+						distances[neighborName] = calculatedNeighborDistance;
+						parents[neighborName] = node;
+					}
+				});
+			});
+		}
+
+		// detecting negative weight cycles
+		nodes.forEach((node) => {
+			const currentNodeNeighbors = this.getNodeNeighbors(node);
+			currentNodeNeighbors.forEach((neighbor) => {
+				const [neighborName, neighborWeight] = neighbor;
+				const calcDist = distances[node] + neighborWeight;
+				const currentNeighborDist = distances[neighborName];
+
+				if (calcDist < currentNeighborDist) {
+					// backtrack to find the path to the negative cycle
+					let cycleTrack = [node, neighborName];
+					let parent = parents[node];
+
+					while (parent !== node && !cycleTrack.includes(parent)) {
+						cycleTrack.unshift(parent);
+						parent = parents[parent];
+					}
+
+					cycles.push(cycleTrack);
+				}
+			});
+		});
+
+		console.log(cycles);
+		return { distances, parents, cycles };
 	}
 }
 
@@ -156,15 +203,9 @@ export class GraphListDirect extends GraphList {
 	}
 
 	isNeighbors(source, destination) {
-		const [sourceNode] = GraphListUtils.getEdgeNodes(
-			source,
-			destination,
-			this.graph
-		);
+		const [sourceNode] = GraphListUtils.getEdgeNodes(source, destination, this.graph);
 
-		const isFoundDestInSrc = sourceNode.find(
-			(neighbor) => neighbor[0] === destination
-		);
+		const isFoundDestInSrc = sourceNode.find((neighbor) => neighbor[0] === destination);
 
 		return !!isFoundDestInSrc;
 	}
@@ -172,11 +213,7 @@ export class GraphListDirect extends GraphList {
 	addEdge(source, destination, weight = 0) {
 		if (this.isNeighbors(source, destination)) return;
 
-		const [sourceNode] = GraphListUtils.getEdgeNodes(
-			source,
-			destination,
-			this.graph
-		);
+		const [sourceNode] = GraphListUtils.getEdgeNodes(source, destination, this.graph);
 
 		sourceNode.push([destination, weight]);
 		this.graph.setKey(source, sourceNode);
@@ -194,11 +231,7 @@ export class GraphListDirect extends GraphList {
 	}
 
 	removeEdge(source, destination) {
-		const [sourceNode] = GraphListUtils.getEdgeNodes(
-			source,
-			destination,
-			this.graph
-		);
+		const [sourceNode] = GraphListUtils.getEdgeNodes(source, destination, this.graph);
 
 		if (!this.isNeighbors(source, destination))
 			throw new Error(`${source} and ${destination} are not neighbors`);
@@ -222,13 +255,9 @@ export class GraphListIndirect extends GraphList {
 			this.graph
 		);
 
-		const isFoundDestInSrc = sourceNode.find(
-			(neighbor) => neighbor[0] === destination
-		);
+		const isFoundDestInSrc = sourceNode.find((neighbor) => neighbor[0] === destination);
 
-		const isFoundSrcInDest = destinationNode.find(
-			(neighbor) => neighbor[0] === source
-		);
+		const isFoundSrcInDest = destinationNode.find((neighbor) => neighbor[0] === source);
 
 		return !!(isFoundDestInSrc && isFoundSrcInDest);
 	}
@@ -263,9 +292,7 @@ export class GraphListIndirect extends GraphList {
 
 	removeEdge(source, destination) {
 		if (!this.isNeighbors(source, destination))
-			throw new Error(
-				`${source} and ${destination} nodes are not neighbors`
-			);
+			throw new Error(`${source} and ${destination} nodes are not neighbors`);
 
 		const sourceNode = this.getNodeNeighbors(source);
 		const destinationNode = this.getNodeNeighbors(destination);
@@ -282,30 +309,32 @@ export class GraphListIndirect extends GraphList {
 	}
 }
 
-// const directedGraph = new GraphListDirect();
-// const indirectGraph = new GraphListIndirect();
+const directedGraph = new GraphListDirect();
+const indirectGraph = new GraphListIndirect();
 
-// indirectGraph.addNode("Book");
-// indirectGraph.addNode("Rare-LP");
-// indirectGraph.addNode("Poster");
-// indirectGraph.addNode("Drum-set");
-// indirectGraph.addNode("Bass-Guitar");
-// indirectGraph.addNode("Piano");
-// indirectGraph.addNode("Sohila");
+directedGraph.addNode("Book");
+directedGraph.addNode("Rare-LP");
+directedGraph.addNode("Poster");
+directedGraph.addNode("Drum-set");
+directedGraph.addNode("Bass-Guitar");
+directedGraph.addNode("Piano");
+directedGraph.addNode("Sohila");
 
-// indirectGraph.addEdge("Book", "Rare-LP", 5);
-// indirectGraph.addEdge("Book", "Poster", 0);
-// indirectGraph.addEdge("Poster", "Bass-Guitar", 30);
-// indirectGraph.addEdge("Poster", "Drum-set", 35);
-// indirectGraph.addEdge("Rare-LP", "Bass-Guitar", 15);
-// indirectGraph.addEdge("Rare-LP", "Drum-set", 20);
-// indirectGraph.addEdge("Bass-Guitar", "Piano", 20);
-// indirectGraph.addEdge("Drum-set", "Piano", 10);
+directedGraph.addEdge("Book", "Rare-LP", 5);
+directedGraph.addEdge("Book", "Poster", 0);
+directedGraph.addEdge("Poster", "Bass-Guitar", 30);
+directedGraph.addEdge("Poster", "Drum-set", 35);
+directedGraph.addEdge("Rare-LP", "Bass-Guitar", 15);
+directedGraph.addEdge("Rare-LP", "Drum-set", 20);
+directedGraph.addEdge("Rare-LP", "Poster", -7);
+directedGraph.addEdge("Bass-Guitar", "Piano", 20);
+directedGraph.addEdge("Drum-set", "Piano", 10);
 
-// const { paths, distances } = indirectGraph.shortestPath("Book");
+const outputBMF = directedGraph.bellmanFord("Book");
+console.log(outputBMF);
 
-// console.log(paths);
-// console.log(distances);
+const outputDIJ = directedGraph.shortestPath("Book");
+// console.log(outputDIJ);
 
 // const callbackFun = (node) => {
 // 	// we assuming here that mango sellers
