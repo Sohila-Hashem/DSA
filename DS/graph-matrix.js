@@ -15,9 +15,7 @@ class GraphMatrixUtils {
 		const destinationIndex = this.getNodeIndex(destination, nodeList);
 
 		if (sourceIndex === undefined || destinationIndex === undefined) {
-			throw new Error(
-				`Either node ${source} or ${destination} is not defined`
-			);
+			throw new Error(`Either node ${source} or ${destination} is not defined`);
 		}
 
 		return [sourceIndex, destinationIndex];
@@ -51,8 +49,7 @@ export class GraphMatrix {
 	addNode(node) {
 		if (this.nodeList[node]) return;
 
-		if (this.currentNodeIndex > this.size)
-			throw new Error("Graph Overflow");
+		if (this.currentNodeIndex > this.size) throw new Error("Graph Overflow");
 
 		this.nodeList[node] = this.currentNodeIndex++;
 	}
@@ -119,8 +116,7 @@ export class GraphMatrix {
 	}
 
 	shortestPath(start) {
-		if (!this.getNode(start))
-			throw new Error(`${start} is not a defined node in the graph`);
+		if (!this.getNode(start)) throw new Error(`${start} is not a defined node in the graph`);
 
 		const paths = {};
 		const visited = {};
@@ -141,29 +137,17 @@ export class GraphMatrix {
 
 			if (!visited[currentNode]) {
 				visited[currentNode] = true;
-
 				const currentNodeNeighbors = this.getNode(currentNode);
 
 				currentNodeNeighbors.forEach((neighborWeight, index) => {
 					if (neighborWeight) {
 						const neighborNodeName = nodes[index];
-						const calculatedNeighborDistance =
-							distances[currentNode] + neighborWeight;
-						const currentNeighborDistance =
-							distances[neighborNodeName];
+						const calculatedNeighborDistance = distances[currentNode] + neighborWeight;
+						const currentNeighborDistance = distances[neighborNodeName];
 
-						if (neighborWeight < 0)
-							throw new Error(
-								"this method can not work on negative weights, use Bellman-Ford instead"
-							);
-
-						if (
-							calculatedNeighborDistance < currentNeighborDistance
-						) {
-							distances[neighborNodeName] =
-								calculatedNeighborDistance;
-							paths[neighborNodeName] =
-								paths[currentNode].concat(currentNode);
+						if (calculatedNeighborDistance < currentNeighborDistance) {
+							distances[neighborNodeName] = calculatedNeighborDistance;
+							paths[neighborNodeName] = paths[currentNode].concat(currentNode);
 							PQueue.enqueue(neighborNodeName, neighborWeight);
 						}
 					}
@@ -172,6 +156,74 @@ export class GraphMatrix {
 		}
 
 		return { distances, paths };
+	}
+
+	bellmanFord(start) {
+		if (!this.getNode(start)) throw new Error(`${start} is not a defined node in the graph`);
+
+		const nodes = Object.keys(this.nodeList);
+		const distances = {};
+		const parents = {};
+		const cycles = [];
+		let isUpdated = false;
+
+		nodes.forEach((node) => {
+			distances[node] = Infinity;
+		});
+
+		distances[start] = 0;
+
+		// relaxing edges between node V-1 times
+		for (let i = 0; i < nodes.length - 1; i++) {
+			if (!isUpdated && i > 2) break;
+			nodes.forEach((node) => {
+				if (distances[node] === Infinity) return;
+				const currentNodeNeighbors = this.getNode(node);
+				currentNodeNeighbors.forEach((neighborWeight, index) => {
+					if (neighborWeight) {
+						const neighborName = nodes[index];
+						const currentNeighborDistance = distances[neighborName];
+						const calculatedNeighborDistance = distances[node] + neighborWeight;
+
+						if (calculatedNeighborDistance < currentNeighborDistance) {
+							distances[neighborName] = calculatedNeighborDistance;
+							parents[neighborName] = node;
+							isUpdated = true;
+							return;
+						}
+
+						isUpdated = false;
+					}
+				});
+			});
+		}
+
+		// detecting negative cycles and backtrack the track if found
+		nodes.forEach((node) => {
+			const currentNodeNeighbors = this.getNode(node);
+			currentNodeNeighbors.forEach((neighborWeight, index) => {
+				if (neighborWeight) {
+					const neighborName = nodes[index];
+					const currentNeighborDistance = distances[neighborName];
+					const calculatedNeighborDistance = distances[node] + neighborWeight;
+
+					if (calculatedNeighborDistance < currentNeighborDistance) {
+						const cycleTrack = [node, neighborName];
+						let parent = parents[node];
+
+						while (parent !== node && !cycleTrack.includes(parent)) {
+							cycleTrack.unshift(parent);
+							parent = parents[parent];
+						}
+
+						cycles.push(cycleTrack);
+					}
+				}
+			});
+		});
+
+		console.log(cycles);
+		return { distances, parents, cycles };
 	}
 
 	printMatrix() {
@@ -190,40 +242,35 @@ export class GraphMatrixDirect extends GraphMatrix {
 	}
 
 	addEdge(source, destination, weight = 1) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.nodeList
-			);
+		const [sourceNodeIndex, destinationNodeIndex] = GraphMatrixUtils.checkExistenceOfNodes(
+			source,
+			destination,
+			this.nodeList
+		);
 
 		this.matrix[sourceNodeIndex][destinationNodeIndex] = weight;
 	}
 
 	removeEdge(source, destination) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.nodeList
-			);
+		const [sourceNodeIndex, destinationNodeIndex] = GraphMatrixUtils.checkExistenceOfNodes(
+			source,
+			destination,
+			this.nodeList
+		);
 
 		if (!this.isNeighbors(source, destination)) {
-			throw new Error(
-				`${source} and ${destination} nodes are not neighbors`
-			);
+			throw new Error(`${source} and ${destination} nodes are not neighbors`);
 		}
 
 		this.matrix[sourceNodeIndex][destinationNodeIndex] = 0;
 	}
 
 	isNeighbors(source, destination) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.nodeList
-			);
+		const [sourceNodeIndex, destinationNodeIndex] = GraphMatrixUtils.checkExistenceOfNodes(
+			source,
+			destination,
+			this.nodeList
+		);
 
 		return !!this.matrix[sourceNodeIndex][destinationNodeIndex];
 	}
@@ -235,29 +282,25 @@ export class GraphMatrixIndirect extends GraphMatrix {
 	}
 
 	addEdge(source, destination, weight = 1) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.nodeList
-			);
+		const [sourceNodeIndex, destinationNodeIndex] = GraphMatrixUtils.checkExistenceOfNodes(
+			source,
+			destination,
+			this.nodeList
+		);
 
 		this.matrix[sourceNodeIndex][destinationNodeIndex] = weight;
 		this.matrix[destinationNodeIndex][sourceNodeIndex] = weight;
 	}
 
 	removeEdge(source, destination) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.nodeList
-			);
+		const [sourceNodeIndex, destinationNodeIndex] = GraphMatrixUtils.checkExistenceOfNodes(
+			source,
+			destination,
+			this.nodeList
+		);
 
 		if (!this.isNeighbors(source, destination)) {
-			throw new Error(
-				`${source} and ${destination} nodes are not neighbors`
-			);
+			throw new Error(`${source} and ${destination} nodes are not neighbors`);
 		}
 
 		this.matrix[sourceNodeIndex][destinationNodeIndex] = 0;
@@ -265,17 +308,14 @@ export class GraphMatrixIndirect extends GraphMatrix {
 	}
 
 	isNeighbors(source, destination) {
-		const [sourceNodeIndex, destinationNodeIndex] =
-			GraphMatrixUtils.checkExistenceOfNodes(
-				source,
-				destination,
-				this.nodeList
-			);
+		const [sourceNodeIndex, destinationNodeIndex] = GraphMatrixUtils.checkExistenceOfNodes(
+			source,
+			destination,
+			this.nodeList
+		);
 
-		const isDestFoundInSrc =
-			!!this.matrix[sourceNodeIndex][destinationNodeIndex];
-		const isSrcFoundInDest =
-			!!this.matrix[destinationNodeIndex][sourceNodeIndex];
+		const isDestFoundInSrc = !!this.matrix[sourceNodeIndex][destinationNodeIndex];
+		const isSrcFoundInDest = !!this.matrix[destinationNodeIndex][sourceNodeIndex];
 
 		return isDestFoundInSrc && isSrcFoundInDest;
 	}
@@ -284,25 +324,28 @@ export class GraphMatrixIndirect extends GraphMatrix {
 // const graphMatrixDirect = new GraphMatrixDirect();
 // const graphMatrixIndirect = new GraphMatrixIndirect();
 
-// graphMatrixIndirect.addNode("A");
-// graphMatrixIndirect.addNode("B");
-// graphMatrixIndirect.addNode("C");
-// graphMatrixIndirect.addNode("D");
-// graphMatrixIndirect.addNode("E");
-// graphMatrixIndirect.addNode("F");
-// graphMatrixIndirect.addNode("G");
-// graphMatrixIndirect.addNode("N");
+// graphMatrixDirect.addNode("A");
+// graphMatrixDirect.addNode("B");
+// graphMatrixDirect.addNode("C");
+// graphMatrixDirect.addNode("D");
+// graphMatrixDirect.addNode("E");
+// graphMatrixDirect.addNode("F");
+// graphMatrixDirect.addNode("G");
+// graphMatrixDirect.addNode("N");
 
-// graphMatrixIndirect.addEdge("A", "B", 12);
-// graphMatrixIndirect.addEdge("A", "C", 2);
-// graphMatrixIndirect.addEdge("C", "B", 9);
-// graphMatrixIndirect.addEdge("C", "F", 14);
-// graphMatrixIndirect.addEdge("C", "N", 16);
-// graphMatrixIndirect.addEdge("N", "F", 5);
-// graphMatrixIndirect.addEdge("B", "D", 7);
-// graphMatrixIndirect.addEdge("F", "E", 15);
-// graphMatrixIndirect.addEdge("D", "G", 8);
-// graphMatrixIndirect.addEdge("E", "G", 7);
+// graphMatrixDirect.addEdge("A", "B", 12);
+// graphMatrixDirect.addEdge("A", "C", 2);
+// graphMatrixDirect.addEdge("C", "B", 9);
+// graphMatrixDirect.addEdge("C", "F", 14);
+// graphMatrixDirect.addEdge("C", "N", 16);
+// graphMatrixDirect.addEdge("N", "F", 5);
+// graphMatrixDirect.addEdge("B", "D", -7);
+// graphMatrixDirect.addEdge("F", "E", 15);
+// graphMatrixDirect.addEdge("D", "G", 8);
+// graphMatrixDirect.addEdge("E", "G", 7);
+
+// const outputBMF = graphMatrixDirect.bellmanFord("A");
+// console.log(outputBMF);
 
 // const { distances, paths } = graphMatrixIndirect.shortestPath("C");
 // console.log(distances);
