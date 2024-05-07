@@ -56,40 +56,40 @@ export default class GraphList {
 	}
 
 	bfs(start, compareCB) {
-		const startNodeNeighbors = this.getNodeNeighbors(start);
-
-		if (!startNodeNeighbors || !startNodeNeighbors.length)
+		if (!this.getNodeNeighbors(start))
 			throw new Error(`${start} is not a defined node in the graph`);
 
 		const queue = new Queue();
+		const visited = new Set();
 		const result = [];
-		const visited = {};
 
 		queue.enqueue(start);
 
 		while (!queue.isEmpty()) {
-			const currentNodeName = queue.dequeue();
+			const currentNode = queue.dequeue();
 
-			if (!visited[currentNodeName]) {
-				const currentNodeNeighbors = this.getNodeNeighbors(currentNodeName);
+			if (!visited.has(currentNode)) {
+				visited.add(currentNode);
 
-				for (let i = 0; i < currentNodeNeighbors.length; i++) {
-					queue.enqueue(currentNodeNeighbors[i][0]);
+				const currentNodeNeighbors = this.getNodeNeighbors(currentNode);
+
+				currentNodeNeighbors.forEach((neighbor) => {
+					const [neighborName] = neighbor;
+					queue.enqueue(neighborName);
+				});
+
+				if (compareCB && !compareCB(currentNode)) {
+					continue;
 				}
 
-				if (compareCB && compareCB(currentNodeName)) {
-					result.push(currentNodeName);
-				} else if (!compareCB) {
-					result.push(currentNodeName);
-				}
-
-				visited[currentNodeName] = true;
+				result.push(currentNode);
 			}
 		}
 
 		return result;
 	}
 
+	// Dijkstra algorithm
 	shortestPath(start, target) {
 		if (!this.getNodeNeighbors(start))
 			throw new Error(`"${start}" is not a defined node in the graph`);
@@ -330,10 +330,10 @@ directedGraph.addEdge("Rare-LP", "Poster", -7);
 directedGraph.addEdge("Bass-Guitar", "Piano", 20);
 directedGraph.addEdge("Drum-set", "Piano", 10);
 
-const outputBMF = directedGraph.bellmanFord("Book");
-console.log(outputBMF);
+// const outputBMF = directedGraph.bellmanFord("Book");
+// console.log(outputBMF);
 
-const outputDIJ = directedGraph.shortestPath("Book");
+// const outputDIJ = directedGraph.shortestPath("Book");
 // console.log(outputDIJ);
 
 // const callbackFun = (node) => {
@@ -342,8 +342,8 @@ const outputDIJ = directedGraph.shortestPath("Book");
 // 	if (node.length > 4) return true;
 // 	return false;
 // };
-// const mangoSellersNoCB = indirectGraph.bfs("Book");
-// const mangoSellers = indirectGraph.bfs("Book", callbackFun);
+// const mangoSellersNoCB = directedGraph.bfs("Book");
+// const mangoSellers = directedGraph.bfs("Book", callbackFun);
 
 // console.log(mangoSellersNoCB);
 // console.log(mangoSellers);
