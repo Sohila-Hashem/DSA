@@ -42,7 +42,7 @@ export class GraphMatrix {
 		return this.matrix[this.nodeList[node]];
 	}
 
-	getNodeList() {
+	getNodeListEntries() {
 		return Object.entries(this.nodeList);
 	}
 
@@ -96,7 +96,7 @@ export class GraphMatrix {
 				visited.add(currentNode);
 
 				const currentNodeNeighbors = this.getNode(currentNode);
-				const nodeListEntries = this.getNodeList();
+				const nodeListEntries = this.getNodeListEntries();
 
 				currentNodeNeighbors.forEach((neighborWeight, index) => {
 					if (neighborWeight) {
@@ -111,6 +111,29 @@ export class GraphMatrix {
 				result.push(currentNode);
 			}
 		}
+
+		return result;
+	}
+
+	dfs(currentNode, visited = new Set(), result = []) {
+		if (this.nodeList[currentNode] === undefined)
+			throw new Error(`Node ${start} does not exist in the graph`);
+
+		visited.add(currentNode);
+		result.push(currentNode);
+
+		const nodeListEntries = this.getNodeListEntries();
+		const currentNodeNeighbors = this.getNode(currentNode);
+
+		currentNodeNeighbors.forEach((neighborWeight, index) => {
+			if (neighborWeight) {
+				const neighborName = nodeListEntries[index][0];
+
+				if (!visited.has(neighborName)) {
+					this.dfs(neighborName, visited, result);
+				}
+			}
+		});
 
 		return result;
 	}
@@ -351,6 +374,9 @@ export class GraphMatrixIndirect extends GraphMatrix {
 // console.log(distances);
 // console.log(paths);
 
+// const outputDFS = graphMatrixDirect.dfs("A");
+// console.log(outputDFS);
+
 // // this is just a mock cb to try it with the main bfs algorithm
 // const compareCB = (node) => {
 // 	const nodeName = node + Math.floor(Math.random() * 15);
@@ -378,7 +404,7 @@ export class GraphMatrixIndirect extends GraphMatrix {
 // console.log(graphMatrixIndirect.isNeighbors("I", "E"));
 
 // graphMatrixIndirect.printMatrix();
-// console.log(graphMatrixIndirect.getNodeList());
+// console.log(graphMatrixIndirect.getNodeListEntries());
 
 // // testing errors when nodes are not neighbors
 // graphMatrixIndirect.removeEdge("B", "A"); // for Indirect graphs
