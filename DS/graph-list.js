@@ -89,20 +89,23 @@ export default class GraphList {
 		return result;
 	}
 
-	dfs(currentNode, visited = new Set()) {
+	dfs(currentNode, visited = new Set(), result = []) {
 		if (!this.getNodeNeighbors(currentNode))
 			throw new Error(`${currentNode} is not a defined node in the graph`);
 
 		visited.add(currentNode);
+		result.push(currentNode);
 
 		const currentNodeNeighbors = this.getNodeNeighbors(currentNode);
 
 		currentNodeNeighbors.forEach((node) => {
 			const [neighborName] = node;
 			if (!visited.has(neighborName)) {
-				this.dfs(neighborName, visited);
+				this.dfs(neighborName, visited, result);
 			}
 		});
+
+		return result;
 
 		/* 
 		Visual representation of the call stack
@@ -366,7 +369,8 @@ export class GraphListIndirect extends GraphList {
 // const outputDIJ = directedGraph.shortestPath("Book");
 // console.log(outputDIJ);
 
-// directedGraph.dfs("Book");
+// const outputDFS = directedGraph.dfs("Book");
+// console.log(outputDFS);
 
 // const callbackFun = (node) => {
 // 	// we assuming here that mango sellers
