@@ -89,6 +89,36 @@ export default class GraphList {
 		return result;
 	}
 
+	dfs(currentNode, visited = new Set()) {
+		if (!this.getNodeNeighbors(currentNode))
+			throw new Error(`${currentNode} is not a defined node in the graph`);
+
+		visited.add(currentNode);
+
+		const currentNodeNeighbors = this.getNodeNeighbors(currentNode);
+
+		currentNodeNeighbors.forEach((node) => {
+			const [neighborName] = node;
+			if (!visited.has(neighborName)) {
+				this.dfs(neighborName, visited);
+			}
+		});
+
+		/* 
+		Visual representation of the call stack
+			book -> [Rare-LP, Poster]
+			Rare-LP -> [Bass-Guitar]
+			Bass-Guitar -> [Piano]
+			Piano -> []
+			Rare-LP -> [Drum-Set]
+			Drum-Set -> [Piano]
+			Rare-LP -> [Poster]
+			Poster -> [Bass-Guitar]
+			Poster -> [Drum-Set]
+			Book -> [Poster]
+		 */
+	}
+
 	// Dijkstra algorithm
 	shortestPath(start, target) {
 		if (!this.getNodeNeighbors(start))
@@ -309,32 +339,34 @@ export class GraphListIndirect extends GraphList {
 	}
 }
 
-const directedGraph = new GraphListDirect();
-const indirectGraph = new GraphListIndirect();
+// const directedGraph = new GraphListDirect();
+// const indirectGraph = new GraphListIndirect();
 
-directedGraph.addNode("Book");
-directedGraph.addNode("Rare-LP");
-directedGraph.addNode("Poster");
-directedGraph.addNode("Drum-set");
-directedGraph.addNode("Bass-Guitar");
-directedGraph.addNode("Piano");
-directedGraph.addNode("Sohila");
+// directedGraph.addNode("Book");
+// directedGraph.addNode("Rare-LP");
+// directedGraph.addNode("Poster");
+// directedGraph.addNode("Drum-set");
+// directedGraph.addNode("Bass-Guitar");
+// directedGraph.addNode("Piano");
+// directedGraph.addNode("Sohila");
 
-directedGraph.addEdge("Book", "Rare-LP", 5);
-directedGraph.addEdge("Book", "Poster", 0);
-directedGraph.addEdge("Poster", "Bass-Guitar", 30);
-directedGraph.addEdge("Poster", "Drum-set", 35);
-directedGraph.addEdge("Rare-LP", "Bass-Guitar", 15);
-directedGraph.addEdge("Rare-LP", "Drum-set", 20);
-directedGraph.addEdge("Rare-LP", "Poster", -7);
-directedGraph.addEdge("Bass-Guitar", "Piano", 20);
-directedGraph.addEdge("Drum-set", "Piano", 10);
+// directedGraph.addEdge("Book", "Rare-LP", 5);
+// directedGraph.addEdge("Book", "Poster", 0);
+// directedGraph.addEdge("Poster", "Bass-Guitar", 30);
+// directedGraph.addEdge("Poster", "Drum-set", 35);
+// directedGraph.addEdge("Rare-LP", "Bass-Guitar", 15);
+// directedGraph.addEdge("Rare-LP", "Drum-set", 20);
+// directedGraph.addEdge("Rare-LP", "Poster", -7);
+// directedGraph.addEdge("Bass-Guitar", "Piano", 20);
+// directedGraph.addEdge("Drum-set", "Piano", 10);
 
 // const outputBMF = directedGraph.bellmanFord("Book");
 // console.log(outputBMF);
 
 // const outputDIJ = directedGraph.shortestPath("Book");
 // console.log(outputDIJ);
+
+// directedGraph.dfs("Book");
 
 // const callbackFun = (node) => {
 // 	// we assuming here that mango sellers
