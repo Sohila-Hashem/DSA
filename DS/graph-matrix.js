@@ -81,34 +81,34 @@ export class GraphMatrix {
 	// O(V^2)
 	bfs(start, compareCB) {
 		const queue = new Queue();
+		const visited = new Set();
 		const result = [];
-		const visited = {};
 
-		if (GraphMatrixUtils.getNodeIndex(start, this.nodeList) === undefined)
-			throw new Error(`Node ${start} does not exist in the graph`);
+		if (this.nodeList[start] === undefined)
+			throw new Error(`${start} is not a defined node in the graph!`);
 
 		queue.enqueue(start);
 
 		while (!queue.isEmpty()) {
 			const currentNode = queue.dequeue();
 
-			if (!visited[currentNode]) {
+			if (!visited.has(currentNode)) {
+				visited.add(currentNode);
+
 				const currentNodeNeighbors = this.getNode(currentNode);
 				const nodeListEntries = this.getNodeList();
 
-				for (let i = 0; i < currentNodeNeighbors.length; i++) {
-					if (currentNodeNeighbors[i]) {
-						queue.enqueue(nodeListEntries[i][0]);
+				currentNodeNeighbors.forEach((neighborWeight, index) => {
+					if (neighborWeight) {
+						queue.enqueue(nodeListEntries[index][0]);
 					}
+				});
+
+				if (compareCB && !compareCB(currentNode)) {
+					continue;
 				}
 
-				if (compareCB && compareCB(currentNode)) {
-					result.push(currentNode);
-				} else if (!compareCB) {
-					result.push(currentNode);
-				}
-
-				visited[currentNode] = true;
+				result.push(currentNode);
 			}
 		}
 
@@ -119,7 +119,7 @@ export class GraphMatrix {
 		if (!this.getNode(start)) throw new Error(`${start} is not a defined node in the graph`);
 
 		const paths = {};
-		const visited = {};
+		const visited = new Set();
 		const distances = {};
 		const PQueue = new PriorityQueue();
 		const nodes = Object.keys(this.nodeList);
@@ -135,8 +135,8 @@ export class GraphMatrix {
 		while (!PQueue.isEmpty()) {
 			const { value: currentNode } = PQueue.dequeue();
 
-			if (!visited[currentNode]) {
-				visited[currentNode] = true;
+			if (!visited.has(currentNode)) {
+				visited.add(currentNode);
 				const currentNodeNeighbors = this.getNode(currentNode);
 
 				currentNodeNeighbors.forEach((neighborWeight, index) => {
@@ -351,6 +351,7 @@ export class GraphMatrixIndirect extends GraphMatrix {
 // console.log(distances);
 // console.log(paths);
 
+// // this is just a mock cb to try it with the main bfs algorithm
 // const compareCB = (node) => {
 // 	const nodeName = node + Math.floor(Math.random() * 15);
 // 	if (nodeName.slice(1) % 2 === 0) {
@@ -359,8 +360,8 @@ export class GraphMatrixIndirect extends GraphMatrix {
 // 	return false;
 // };
 
-// console.log(graphMatrixIndirect.bfs("A"));
-// console.log(graphMatrixIndirect.bfs("C", compareCB));
+// console.log(graphMatrixDirect.bfs("A"));
+// console.log(graphMatrixDirect.bfs("C", compareCB));
 
 // console.log(graphMatrixIndirect.getNode("C"));
 
