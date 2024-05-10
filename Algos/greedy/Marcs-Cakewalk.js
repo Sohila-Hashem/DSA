@@ -5,7 +5,7 @@
  * @returns a Long Number Type representing the minimum miles necessary
  */
 
-const solution = (calorie) => {
+function marcsCakewalk(calorie) {
 	let min = 0;
 
 	calorie.sort((a, b) => b - a);
@@ -15,7 +15,7 @@ const solution = (calorie) => {
 	}
 
 	return min;
-};
+}
 
-const output = solution([1, 3, 2]);
+const output = marcsCakewalk([1, 3, 2]);
 console.log(output);

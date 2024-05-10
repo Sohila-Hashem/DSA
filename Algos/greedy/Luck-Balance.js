@@ -5,7 +5,7 @@
  * @param contests a 2D array of integers where each contests[i] contains two integers that represent the luck balance and importance of the ith contest
  * @returns an Integer representing the maximum luck balance achievable
  */
-const solution = (k, contests) => {
+function luckBalance(k, contests) {
 	let maxLuck = 0;
 
 	contests.sort((a, b) => {
@@ -26,9 +26,9 @@ const solution = (k, contests) => {
 	}
 
 	return maxLuck;
-};
+}
 
-const output = solution(3, [
+const output = luckBalance(3, [
 	[5, 1],
 	[2, 1],
 	[1, 1],
