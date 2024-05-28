@@ -33,8 +33,7 @@ export class LinkedList {
 
 	// insert to the first
 	insertHead(data) {
-		if (data === undefined)
-			throw new Error("argument data must be defined");
+		if (data === undefined) throw new Error("argument data must be defined");
 
 		const node = new Node(data, this.#head);
 

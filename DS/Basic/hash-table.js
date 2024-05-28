@@ -1,4 +1,4 @@
-export default class HashTable {
+export class HashTable {
 	#size;
 	#loadFactor;
 	#loadFactorLimit = 0.7;

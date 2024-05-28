@@ -1,4 +1,5 @@
-import { Queue, PriorityQueue } from "./queue.js";
+import { Queue, PriorityQueue } from "../index.js";
+
 class GraphMatrixUtils {
 	static getNodeIndex(node, nodeList) {
 		if (!node) throw new Error("expected an argument of node");
@@ -22,7 +23,7 @@ class GraphMatrixUtils {
 	}
 }
 
-export class GraphMatrix {
+export default class GraphMatrix {
 	currentNodeIndex;
 
 	constructor(size = 10) {

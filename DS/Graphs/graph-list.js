@@ -1,5 +1,4 @@
-import HashTable from "./hash-table.js";
-import { Queue, PriorityQueue } from "./queue.js";
+import { HashTable, Queue, PriorityQueue } from "../index.js";
 
 class GraphListUtils {
 	static getEdgeNodes(source, destination, graph) {
@@ -17,7 +16,7 @@ class GraphListUtils {
 	}
 }
 
-export default class GraphList {
+export class GraphList {
 	constructor(size) {
 		this.graph = new HashTable(size);
 	}
