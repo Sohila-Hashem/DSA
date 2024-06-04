@@ -23,6 +23,28 @@ c.right = f;
 c.left = g;
 
 // TRAVERSING
+const bfs = (root) => {
+	if (root === null) return [];
+
+	const result = [];
+	const queue = new Queue();
+
+	queue.enqueue(root);
+
+	while (!queue.isEmpty()) {
+		const currentNode = queue.dequeue();
+
+		result.push(currentNode.value);
+
+		if (currentNode.left !== null) queue.enqueue(currentNode.left);
+		if (currentNode.right !== null) queue.enqueue(currentNode.right);
+	}
+
+	return result;
+};
+
+// console.log(bfs(root));
+
 const dfs = (root) => {
 	if (root === null) return [];
 
@@ -44,36 +66,17 @@ const dfs = (root) => {
 
 // console.log(dfs(a));
 
-const dfsRecursive = (root) => {
+// DFS -> root, left, right
+const preOrderDFS = (root) => {
 	if (root === null) return [];
 
-	const leftChildren = dfsRecursive(root.left);
-	const rightChildren = dfsRecursive(root.right);
+	const leftChildren = preOrderDFS(root.left);
+	const rightChildren = preOrderDFS(root.right);
 
 	return [root.value, ...leftChildren, ...rightChildren];
 };
 
-// console.log(dfsRecursive(a));
-
-const bfs = (root) => {
-	if (root === null) return [];
-
-	const result = [];
-	const queue = new Queue();
-
-	queue.enqueue(root);
-
-	while (!queue.isEmpty()) {
-		const currentNode = queue.dequeue();
-
-		result.push(currentNode.value);
-
-		if (currentNode.left !== null) queue.enqueue(currentNode.left);
-		if (currentNode.right !== null) queue.enqueue(currentNode.right);
-	}
-
-	return result;
-};
+// console.log(preOrderDFS(a));
 
 // DFS -> left, root, right
 const inOrderTraversal = (root) => {
@@ -85,9 +88,19 @@ const inOrderTraversal = (root) => {
 	return [...left, root.value, ...right];
 };
 
-console.log(inOrderTraversal(a));
+// console.log(inOrderTraversal(a));
 
-// console.log(bfs(a));
+// DFS -> left, right, root
+function postOrderTraversal(root) {
+	if (root === null) return [];
+
+	const left = postOrderTraversal(root.left);
+	const right = postOrderTraversal(root.right);
+
+	return [...left, ...right, root.value];
+}
+
+// console.log(postOrderTraversal(a));
 
 // INCLUDES?
 const includesBFS = (root, target) => {
