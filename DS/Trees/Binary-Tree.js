@@ -13,12 +13,14 @@ const c = new TreeNode(3);
 const d = new TreeNode(4);
 const e = new TreeNode(2);
 const f = new TreeNode(1);
+const g = new TreeNode(9);
 
 a.left = b;
 a.right = c;
 b.left = d;
 b.right = e;
 c.right = f;
+c.left = g;
 
 // TRAVERSING
 const dfs = (root) => {
@@ -46,9 +48,7 @@ const dfsRecursive = (root) => {
 	if (root === null) return [];
 
 	const leftChildren = dfsRecursive(root.left);
-	leftChildren;
 	const rightChildren = dfsRecursive(root.right);
-	rightChildren;
 
 	return [root.value, ...leftChildren, ...rightChildren];
 };
@@ -74,6 +74,18 @@ const bfs = (root) => {
 
 	return result;
 };
+
+// DFS -> left, root, right
+const inOrderTraversal = (root) => {
+	if (root === null) return [];
+
+	const left = inOrderTraversal(root.left);
+	const right = inOrderTraversal(root.right);
+
+	return [...left, root.value, ...right];
+};
+
+console.log(inOrderTraversal(a));
 
 // console.log(bfs(a));
 
@@ -213,5 +225,5 @@ const maxRootToLeafPath = (root) => {
 //  	    5
 // 		/      \
 //    11        3
-//   /  \        \
-//  4    2        1
+//   /  \     /  \
+//  4    2   9    1
