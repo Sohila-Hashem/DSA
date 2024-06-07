@@ -15,3 +15,5 @@ export * from "./Stacks/stack.js";
 export * from "./Stacks/stack-LL.js";
 
 export * from "./Trees/Tree.js";
+
+export * from "./Trees/Binary-Tree.js";

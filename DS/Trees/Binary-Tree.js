@@ -1,29 +1,7 @@
 import { TreeNode, Stack, Queue } from "../index.js";
 
-// const a = new TreeNode("a");
-// const b = new TreeNode("b");
-// const c = new TreeNode("c");
-// const d = new TreeNode("d");
-// const e = new TreeNode("e");
-// const f = new TreeNode("f");
-
-const a = new TreeNode(5);
-const b = new TreeNode(11);
-const c = new TreeNode(3);
-const d = new TreeNode(4);
-const e = new TreeNode(2);
-const f = new TreeNode(1);
-const g = new TreeNode(9);
-
-a.left = b;
-a.right = c;
-b.left = d;
-b.right = e;
-c.right = f;
-c.left = g;
-
 // TRAVERSING
-const bfs = (root) => {
+export const bfs = (root) => {
 	if (root === null) return [];
 
 	const result = [];
@@ -43,9 +21,7 @@ const bfs = (root) => {
 	return result;
 };
 
-// console.log(bfs(root));
-
-const dfs = (root) => {
+export const dfs = (root) => {
 	if (root === null) return [];
 
 	const result = [];
@@ -64,22 +40,18 @@ const dfs = (root) => {
 	return result;
 };
 
-// console.log(dfs(a));
-
 // DFS -> root, left, right
-const preOrderDFS = (root) => {
+export const preOrderTraversal = (root) => {
 	if (root === null) return [];
 
-	const leftChildren = preOrderDFS(root.left);
-	const rightChildren = preOrderDFS(root.right);
+	const leftChildren = preOrderTraversal(root.left);
+	const rightChildren = preOrderTraversal(root.right);
 
 	return [root.value, ...leftChildren, ...rightChildren];
 };
 
-// console.log(preOrderDFS(a));
-
 // DFS -> left, root, right
-const inOrderTraversal = (root) => {
+export const inOrderTraversal = (root) => {
 	if (root === null) return [];
 
 	const left = inOrderTraversal(root.left);
@@ -88,10 +60,8 @@ const inOrderTraversal = (root) => {
 	return [...left, root.value, ...right];
 };
 
-// console.log(inOrderTraversal(a));
-
 // DFS -> left, right, root
-function postOrderTraversal(root) {
+export function postOrderTraversal(root) {
 	if (root === null) return [];
 
 	const left = postOrderTraversal(root.left);
@@ -100,10 +70,8 @@ function postOrderTraversal(root) {
 	return [...left, ...right, root.value];
 }
 
-// console.log(postOrderTraversal(a));
-
 // INCLUDES?
-const includesBFS = (root, target) => {
+export const includesBFS = (root, target) => {
 	if (root === null) return false;
 
 	const queue = new Queue();
@@ -122,29 +90,21 @@ const includesBFS = (root, target) => {
 	return false;
 };
 
-// console.log(includesBFS(a, "n"));
-// console.log(includesBFS(a, "e"));
-
-const includesDFSRecursive = (root, target) => {
+export const includesDFSRecursive = (root, target) => {
 	if (root === null) return false;
 	if (root.value === target) return true;
 
 	return includesDFSRecursive(root.left, target) || includesDFSRecursive(root.right, target);
 };
 
-// console.log(includesDFSRecursive(a, "n"));
-// console.log(includesDFSRecursive(a, "e"));
-
 // SUM TREE
-const sumDFSRecursive = (root) => {
+export const sumDFSRecursive = (root) => {
 	if (root === null) return 0;
 
 	return root.value + sumDFSRecursive(root.left) + sumDFSRecursive(root.right);
 };
 
-// console.log(sumDFSRecursive(a));
-
-const sumDFS = (root) => {
+export const sumDFS = (root) => {
 	const stack = new Stack(20);
 	let sum = 0;
 
@@ -161,10 +121,8 @@ const sumDFS = (root) => {
 	return sum;
 };
 
-// console.log(sumDFS(a));
-
 // MIN NODE
-const minBFS = (root) => {
+export const minBFS = (root) => {
 	const queue = new Queue(20);
 	let min = Infinity;
 
@@ -184,9 +142,7 @@ const minBFS = (root) => {
 	return min;
 };
 
-// console.log(minBFS(a));
-
-const minDFS = (root) => {
+export const minDFS = (root) => {
 	const stack = new Stack(20);
 	let min = Infinity;
 
@@ -203,9 +159,7 @@ const minDFS = (root) => {
 	return min;
 };
 
-// console.log(minDFS(a));
-
-const minDFSRecursive = (root) => {
+export const minDFSRecursive = (root) => {
 	if (root === null) return Infinity;
 
 	const minLeft = minDFSRecursive(root.left);
@@ -216,9 +170,7 @@ const minDFSRecursive = (root) => {
 	return min;
 };
 
-// console.log(minDFSRecursive(a));
-
-const maxRootToLeafPath = (root) => {
+export const maxRootToLeafPath = (root) => {
 	if (root === null) return -Infinity;
 	if (root.left === null && root.right === null) return root.value;
 
@@ -226,17 +178,3 @@ const maxRootToLeafPath = (root) => {
 
 	return root.value + maxChildPath;
 };
-
-// console.log(maxRootToLeafPath(a));
-
-//  	   a
-// 		/    \
-//    b       c
-//   / \       \
-//  d   e       f
-
-//  	    5
-// 		/      \
-//    11        3
-//   /  \     /  \
-//  4    2   9    1
