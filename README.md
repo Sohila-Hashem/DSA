@@ -40,6 +40,7 @@ I decided to use **JavaScript** for the sake of simplicity.
         -   [Priyanka-and-Toys](./Algos/greedy/Priyanka-and-Toys.js)
     -   [Searching Algorithms](./Algos/Searching/)
         -   [Binary Search](./Algos/Searching/binary-search.js)
+        -   [BST Search](./Algos/Searching/BST-search.js)
         -   [Linear Search](./Algos/Searching/linear-search.js)
     -   [Sorting Algorithms](./Algos/Sorting/)
         -   [Bubble Sort](./Algos/Sorting/bubble-sort.js)
