@@ -1,12 +1,8 @@
 # About
 
-A repository that i dedicate only for implementing Data structures from scratch, as well as for practising different types of Algorithms on a daily basis whenever possible.
+A repository that i decided to dedicate only for implementing data structures and algorithms from scratch, as well as for addding solutions to differnt problem-solving challenges on a daily basis whenever possible.
 
 > Feel free to provide me with feedback about the solutions and the implementations.
-
-# Programming Language used.
-
-I decided to use **JavaScript** for the sake of simplicity.
 
 # Contents
 
