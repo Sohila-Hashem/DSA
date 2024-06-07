@@ -25,6 +25,9 @@ I decided to use **JavaScript** for the sake of simplicity.
         -   [Adjacency-List graph](./DS/Graphs/graph-list.js)
         -   [Adjacency-Matrix graph](./DS/Graphs/graph-matrix.js)
     -   [Trees](./DS/Trees)
+        -   [Tree](./DS/Trees/Tree.js)
+        -   [Binary Tree](./DS/Trees/Binary-Tree.js)
+        -   [Binary Search Tree](./DS/Trees/Binary-Search-Tree.js)
 
 -   [Algos](./Algos/)
     -   [Greedy Algorithm](./Algos/greedy/)
