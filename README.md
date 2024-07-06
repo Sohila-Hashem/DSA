@@ -1,6 +1,6 @@
 # About
 
-A repository that i decided to dedicate only for implementing data structures and algorithms from scratch, as well as for addding solutions to differnt problem-solving challenges on a daily basis whenever possible.
+A repository that i decided to dedicate only for implementing data structures and algorithms from scratch, as well as for addding solutions to differnt problem-solving challenges from different catecories and levels whenever possible.
 
 > Feel free to provide me with feedback about the solutions and the implementations.
 
